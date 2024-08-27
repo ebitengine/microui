@@ -7,6 +7,20 @@ import (
 	"github.com/Zyko0/microui-ebitengine"
 )
 
+func min(a, b int) int {
+	if a < b {
+		return a
+	}
+	return b
+}
+
+func max(a, b int) int {
+	if a > b {
+		return a
+	}
+	return b
+}
+
 var (
 	logBuf       string
 	logSubmitBuf string

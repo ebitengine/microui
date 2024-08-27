@@ -1,6 +1,6 @@
 module github.com/Zyko0/microui-ebitengine
 
-go 1.21.1
+go 1.19
 
 require (
 	github.com/hajimehoshi/ebiten/v2 v2.7.8
