@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"unsafe"
 
-	"github.com/Zyko0/microui-ebitengine"
+	"github.com/ebitengine/microui"
 )
 
 func min(a, b int) int {

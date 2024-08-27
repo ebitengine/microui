@@ -5,12 +5,13 @@ import (
 	"image"
 	"log"
 
-	"github.com/Zyko0/microui-ebitengine"
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
 	"github.com/hajimehoshi/ebiten/v2/text/v2"
 	"github.com/hajimehoshi/ebiten/v2/vector"
 	"golang.org/x/image/font/gofont/goregular"
+
+	"github.com/ebitengine/microui"
 )
 
 var (
