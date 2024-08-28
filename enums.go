@@ -49,20 +49,22 @@ const (
 	ResChange = (1 << 2)
 )
 
+type Option int
+
 const (
-	OptAlignCenter = (1 << 0)
-	OptAlignRight  = (1 << 1)
-	OptNoInteract  = (1 << 2)
-	OptNoFrame     = (1 << 3)
-	OptNoResize    = (1 << 4)
-	OptNoScroll    = (1 << 5)
-	OptNoClose     = (1 << 6)
-	OptNoTitle     = (1 << 7)
-	OptHoldFocus   = (1 << 8)
-	OptAutoSize    = (1 << 9)
-	OptPopup       = (1 << 10)
-	OptClosed      = (1 << 11)
-	OptExpanded    = (1 << 12)
+	OptAlignCenter Option = (1 << iota)
+	OptAlignRight
+	OptNoInteract
+	OptNoFrame
+	OptNoResize
+	OptNoScroll
+	OptNoClose
+	OptNoTitle
+	OptHoldFocus
+	OptAutoSize
+	OptPopup
+	OptClosed
+	OptExpanded
 )
 
 const (

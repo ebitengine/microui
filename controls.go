@@ -28,7 +28,7 @@ func (ctx *Context) InHoverRoot() bool {
 	return false
 }
 
-func (ctx *Context) DrawControlFrame(id ID, rect image.Rectangle, colorid int, opt int) {
+func (ctx *Context) DrawControlFrame(id ID, rect image.Rectangle, colorid int, opt Option) {
 	if (opt & OptNoFrame) != 0 {
 		return
 	}
@@ -40,7 +40,7 @@ func (ctx *Context) DrawControlFrame(id ID, rect image.Rectangle, colorid int, o
 	ctx.DrawFrame(ctx, rect, colorid)
 }
 
-func (ctx *Context) DrawControlText(str string, rect image.Rectangle, colorid int, opt int) {
+func (ctx *Context) DrawControlText(str string, rect image.Rectangle, colorid int, opt Option) {
 	var pos image.Point
 	font := ctx.Style.Font
 	tw := ctx.TextWidth(font, str)
@@ -61,7 +61,7 @@ func (ctx *Context) mouseOver(rect image.Rectangle) bool {
 	return ctx.mousePos.In(rect) && ctx.mousePos.In(ctx.GetClipRect()) && ctx.InHoverRoot()
 }
 
-func (ctx *Context) updateControl(id ID, rect image.Rectangle, opt int) {
+func (ctx *Context) updateControl(id ID, rect image.Rectangle, opt Option) {
 	mouseover := ctx.mouseOver(rect)
 
 	if ctx.Focus == id {
@@ -128,7 +128,7 @@ func (ctx *Context) Label(text string) {
 	ctx.DrawControlText(text, ctx.LayoutNext(), ColorText, 0)
 }
 
-func (ctx *Context) ButtonEx(label string, icon Icon, opt int) int {
+func (ctx *Context) ButtonEx(label string, icon Icon, opt Option) int {
 	var res int = 0
 	var id ID
 	if len(label) > 0 {
@@ -178,7 +178,7 @@ func (ctx *Context) Checkbox(label string, state *bool) int {
 	return res
 }
 
-func (ctx *Context) TextboxRaw(buf *string, id ID, r image.Rectangle, opt int) int {
+func (ctx *Context) TextboxRaw(buf *string, id ID, r image.Rectangle, opt Option) int {
 	var res int = 0
 	ctx.updateControl(id, r, opt|OptHoldFocus)
 	buflen := len(*buf)
@@ -244,13 +244,13 @@ func (ctx *Context) NumberTextBox(value *float32, r image.Rectangle, id ID) bool
 	return false
 }
 
-func (ctx *Context) TextBoxEx(buf *string, opt int) int {
+func (ctx *Context) TextBoxEx(buf *string, opt Option) int {
 	id := ctx.GetID(PtrToBytes(unsafe.Pointer(buf)))
 	r := ctx.LayoutNext()
 	return ctx.TextboxRaw(buf, id, r, opt)
 }
 
-func (ctx *Context) SliderEx(value *float32, low, high, step float32, format string, opt int) int {
+func (ctx *Context) SliderEx(value *float32, low, high, step float32, format string, opt Option) int {
 	var x, w, res int = 0, 0, 0
 	last := *value
 	v := last
@@ -293,7 +293,7 @@ func (ctx *Context) SliderEx(value *float32, low, high, step float32, format str
 	return res
 }
 
-func (ctx *Context) NumberEx(value *float32, step float32, format string, opt int) int {
+func (ctx *Context) NumberEx(value *float32, step float32, format string, opt Option) int {
 	var res int = 0
 	id := ctx.GetID(PtrToBytes(unsafe.Pointer(&value)))
 	base := ctx.LayoutNext()
@@ -325,7 +325,7 @@ func (ctx *Context) NumberEx(value *float32, step float32, format string, opt in
 	return res
 }
 
-func (ctx *Context) header(label string, istreenode bool, opt int) int {
+func (ctx *Context) header(label string, istreenode bool, opt Option) int {
 	id := ctx.GetID([]byte(label))
 	idx := ctx.poolGet(ctx.treeNodePool[:], id)
 	ctx.LayoutRow(1, []int{-1}, 0)
@@ -390,11 +390,11 @@ func (ctx *Context) header(label string, istreenode bool, opt int) int {
 	return 0
 }
 
-func (ctx *Context) HeaderEx(label string, opt int) int {
+func (ctx *Context) HeaderEx(label string, opt Option) int {
 	return ctx.header(label, false, opt)
 }
 
-func (ctx *Context) BeginTreeNodeEx(label string, opt int) int {
+func (ctx *Context) BeginTreeNodeEx(label string, opt Option) int {
 	res := ctx.header(label, true, opt)
 	if (res & ResActive) != 0 {
 		ctx.GetLayout().Indent += ctx.Style.Indent
@@ -510,7 +510,7 @@ func (ctx *Context) Scrollbars(cnt *Container, body *image.Rectangle) {
 	ctx.PopClipRect()
 }
 
-func (ctx *Context) PushContainerBody(cnt *Container, body image.Rectangle, opt int) {
+func (ctx *Context) PushContainerBody(cnt *Container, body image.Rectangle, opt Option) {
 	if (^opt & OptNoScroll) != 0 {
 		ctx.Scrollbars(cnt, &body)
 	}
@@ -548,7 +548,7 @@ func (ctx *Context) EndRootContainer() {
 	ctx.PopContainer()
 }
 
-func (ctx *Context) BeginWindowEx(title string, rect image.Rectangle, opt int) int {
+func (ctx *Context) BeginWindowEx(title string, rect image.Rectangle, opt Option) int {
 	id := ctx.GetID([]byte(title))
 	cnt := ctx.getContainer(id, opt)
 	if cnt == nil || !cnt.Open {
@@ -655,7 +655,7 @@ func (ctx *Context) EndPopup() {
 	ctx.EndWindow()
 }
 
-func (ctx *Context) BeginPanelEx(name string, opt int) {
+func (ctx *Context) BeginPanelEx(name string, opt Option) {
 	var cnt *Container
 	ctx.PushID([]byte(name))
 	cnt = ctx.getContainer(ctx.LastID, opt)

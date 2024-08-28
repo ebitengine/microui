@@ -143,7 +143,7 @@ func (ctx *Context) GetCurrentContainer() *Container {
 	return ctx.ContainerStack[len(ctx.ContainerStack)-1]
 }
 
-func (ctx *Context) getContainer(id ID, opt int) *Container {
+func (ctx *Context) getContainer(id ID, opt Option) *Container {
 	// try to get existing container from pool
 	idx := ctx.poolGet(ctx.containerPool[:], id)
 	if idx >= 0 {
