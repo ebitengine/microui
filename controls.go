@@ -274,6 +274,7 @@ func (ctx *Context) SliderEx(value *float32, low, high, step float32, format str
 	}
 	// clamp and store value, update res
 	*value = clampF(v, low, high)
+	v = *value
 	if last != v {
 		res |= ResChange
 	}
