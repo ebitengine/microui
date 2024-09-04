@@ -556,12 +556,14 @@ func (c *Context) endRootContainer() {
 
 func (c *Context) WindowEx(title string, rect image.Rectangle, opt Option, f func(res Res)) {
 	id := c.id([]byte(title))
+
 	cnt := c.container(id, opt)
 	if cnt == nil || !cnt.Open {
 		return
 	}
 	// push()
 	c.idStack = append(c.idStack, id)
+	defer c.popID()
 	// This is popped at endRootContainer.
 	// TODO: This is tricky. Refactor this.
 
@@ -659,6 +661,8 @@ func (c *Context) Popup(name string, f func(res Res)) {
 
 func (c *Context) PanelEx(name string, opt Option, f func()) {
 	id := c.pushID([]byte(name))
+	defer c.popID()
+
 	cnt := c.container(id, opt)
 	cnt.Rect = c.layoutNext()
 	if (^opt & OptNoFrame) != 0 {

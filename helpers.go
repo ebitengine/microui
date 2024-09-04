@@ -130,7 +130,6 @@ func (c *Context) popContainer() {
 	c.containerStack = c.containerStack[:len(c.containerStack)-1]
 	// pop()
 	c.layoutStack = c.layoutStack[:len(c.layoutStack)-1]
-	c.popID()
 }
 
 func (c *Context) CurrentContainer() *Container {

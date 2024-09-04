@@ -38,7 +38,7 @@ func (c *Context) SetLayoutRow(widths []int, height int) {
 	if len(layout.widths) < len(widths) {
 		layout.widths = append(layout.widths, make([]int, len(widths)-len(layout.widths))...)
 	}
-	copy(layout.widths[:], widths)
+	copy(layout.widths, widths)
 	layout.widths = layout.widths[:len(widths)]
 
 	layout.position = image.Pt(layout.indent, layout.nextRow)
