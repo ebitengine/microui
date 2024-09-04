@@ -47,7 +47,7 @@ type iconCommand struct {
 type layout struct {
 	body      image.Rectangle
 	position  image.Point
-	size      image.Point
+	height    int
 	max       image.Point
 	widths    []int
 	items     int

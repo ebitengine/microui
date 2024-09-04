@@ -42,7 +42,7 @@ func (c *Context) SetLayoutRow(items int, widths []int, height int) {
 
 	layout.items = items
 	layout.position = image.Pt(layout.indent, layout.nextRow)
-	layout.size.Y = height
+	layout.height = height
 	layout.itemIndex = 0
 }
 
@@ -51,7 +51,7 @@ func (c *Context) layoutNext() image.Rectangle {
 
 	// handle next row
 	if layout.itemIndex == layout.items {
-		c.SetLayoutRow(layout.items, nil, layout.size.Y)
+		c.SetLayoutRow(layout.items, nil, layout.height)
 	}
 
 	// position
@@ -60,10 +60,8 @@ func (c *Context) layoutNext() image.Rectangle {
 	// size
 	if layout.items > 0 {
 		res.Max.X = res.Min.X + layout.widths[layout.itemIndex]
-	} else {
-		res.Max.X = res.Min.X + layout.size.X
 	}
-	res.Max.Y = res.Min.Y + layout.size.Y
+	res.Max.Y = res.Min.Y + layout.height
 	if res.Dx() == 0 {
 		res.Max.X = res.Min.X + c.Style.Size.X + c.Style.Padding*2
 	}
