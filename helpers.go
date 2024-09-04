@@ -91,22 +91,22 @@ func (c *Context) popID() {
 	c.idStack = c.idStack[:len(c.idStack)-1]
 }
 
-func (c *Context) PushClipRect(rect image.Rectangle) {
-	last := c.ClipRect()
+func (c *Context) pushClipRect(rect image.Rectangle) {
+	last := c.clipRect()
 	// push()
 	c.clipStack = append(c.clipStack, rect.Intersect(last))
 }
 
-func (c *Context) PopClipRect() {
+func (c *Context) popClipRect() {
 	c.clipStack = c.clipStack[:len(c.clipStack)-1]
 }
 
-func (c *Context) ClipRect() image.Rectangle {
+func (c *Context) clipRect() image.Rectangle {
 	return c.clipStack[len(c.clipStack)-1]
 }
 
 func (c *Context) CheckClip(r image.Rectangle) int {
-	cr := c.ClipRect()
+	cr := c.clipRect()
 	if !r.Overlaps(cr) {
 		return ClipAll
 	}

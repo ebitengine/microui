@@ -58,7 +58,7 @@ func (c *Context) SetClip(rect image.Rectangle) {
 
 // DrawRect pushes a new rect command
 func (c *Context) DrawRect(rect image.Rectangle, color color.Color) {
-	rect2 := rect.Intersect(c.ClipRect())
+	rect2 := rect.Intersect(c.clipRect())
 	if rect2.Dx() > 0 && rect2.Dy() > 0 {
 		cmd := c.pushCommand(commandRect)
 		cmd.rect.rect = rect2
@@ -80,7 +80,7 @@ func (c *Context) DrawText(str string, pos image.Point, color color.Color) {
 		return
 	}
 	if clipped == ClipPart {
-		c.SetClip(c.ClipRect())
+		c.SetClip(c.clipRect())
 	}
 	// add command
 	cmd := c.pushCommand(commandText)
@@ -100,7 +100,7 @@ func (c *Context) DrawIcon(icon Icon, rect image.Rectangle, color color.Color) {
 		return
 	}
 	if clipped == ClipPart {
-		c.SetClip(c.ClipRect())
+		c.SetClip(c.clipRect())
 	}
 	// do icon command
 	cmd := c.pushCommand(commandIcon)

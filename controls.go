@@ -40,7 +40,7 @@ func (c *Context) DrawControlFrame(id ID, rect image.Rectangle, colorid int, opt
 func (c *Context) DrawControlText(str string, rect image.Rectangle, colorid int, opt Option) {
 	var pos image.Point
 	tw := textWidth(str)
-	c.PushClipRect(rect)
+	c.pushClipRect(rect)
 	pos.Y = rect.Min.Y + (rect.Dy()-textHeight())/2
 	if (opt & OptAlignCenter) != 0 {
 		pos.X = rect.Min.X + (rect.Dx()-tw)/2
@@ -50,11 +50,11 @@ func (c *Context) DrawControlText(str string, rect image.Rectangle, colorid int,
 		pos.X = rect.Min.X + c.Style.Padding
 	}
 	c.DrawText(str, pos, c.Style.Colors[colorid])
-	c.PopClipRect()
+	c.popClipRect()
 }
 
 func (c *Context) mouseOver(rect image.Rectangle) bool {
-	return c.mousePos.In(rect) && c.mousePos.In(c.ClipRect()) && c.inHoverRoot()
+	return c.mousePos.In(rect) && c.mousePos.In(c.clipRect()) && c.inHoverRoot()
 }
 
 func (c *Context) updateControl(id ID, rect image.Rectangle, opt Option) {
@@ -221,10 +221,10 @@ func (c *Context) textBoxRaw(buf *string, id ID, opt Option) Res {
 			ofx := r.Dx() - c.Style.Padding - textw - 1
 			textx := r.Min.X + min(ofx, c.Style.Padding)
 			texty := r.Min.Y + (r.Dy()-texth)/2
-			c.PushClipRect(r)
+			c.pushClipRect(r)
 			c.DrawText(*buf, image.Pt(textx, texty), color)
 			c.DrawRect(image.Rect(textx+textw, texty, textx+textw+1, texty+texth), color)
-			c.PopClipRect()
+			c.popClipRect()
 		} else {
 			c.DrawControlText(*buf, r, ColorText, opt)
 		}
@@ -500,7 +500,7 @@ func (c *Context) scrollbars(cnt *Container, body image.Rectangle) image.Rectang
 	cs := cnt.ContentSize
 	cs.X += c.Style.Padding * 2
 	cs.Y += c.Style.Padding * 2
-	c.PushClipRect(body)
+	c.pushClipRect(body)
 	// resize body to make room for scrollbars
 	if cs.Y > cnt.Body.Dy() {
 		body.Max.X -= sz
@@ -512,7 +512,7 @@ func (c *Context) scrollbars(cnt *Container, body image.Rectangle) image.Rectang
 	// used; only the references to `x|y` `w|h` need to be switched
 	c.scrollbar(cnt, body, cs, false)
 	c.scrollbar(cnt, body, cs, true)
-	c.PopClipRect()
+	c.popClipRect()
 	return body
 }
 
@@ -550,7 +550,7 @@ func (c *Context) endRootContainer() {
 	cnt.TailIdx = c.pushJump(-1)
 	c.commandList[cnt.HeadIdx].jump.dstIdx = len(c.commandList) //- 1
 	// pop base clip rect and container
-	c.PopClipRect()
+	c.popClipRect()
 	c.popContainer()
 }
 
@@ -636,8 +636,8 @@ func (c *Context) WindowEx(title string, rect image.Rectangle, opt Option, f fun
 		cnt.Open = false
 	}
 
-	c.PushClipRect(cnt.Body)
-	defer c.PopClipRect()
+	c.pushClipRect(cnt.Body)
+	defer c.popClipRect()
 	f(ResActive)
 }
 
@@ -668,7 +668,7 @@ func (c *Context) PanelEx(name string, opt Option, f func()) {
 	c.containerStack = append(c.containerStack, cnt)
 	c.pushContainerBody(cnt, cnt.Rect, opt)
 	defer c.popContainer()
-	c.PushClipRect(cnt.Body)
-	defer c.PopClipRect()
+	c.pushClipRect(cnt.Body)
+	defer c.popClipRect()
 	f()
 }
