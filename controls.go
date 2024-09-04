@@ -517,11 +517,22 @@ func (c *Context) scrollbars(cnt *Container, body image.Rectangle) image.Rectang
 }
 
 func (c *Context) pushContainerBody(cnt *Container, body image.Rectangle, opt Option) {
+	c.containerStack = append(c.containerStack, cnt)
 	if (^opt & OptNoScroll) != 0 {
 		body = c.scrollbars(cnt, body)
 	}
 	c.pushLayout(body.Inset(c.Style.Padding), cnt.Scroll)
 	cnt.Body = body
+}
+
+func (c *Context) popContainerBody() {
+	cnt := c.CurrentContainer()
+	layout := c.layout()
+	cnt.ContentSize.X = layout.max.X - layout.body.Min.X
+	cnt.ContentSize.Y = layout.max.Y - layout.body.Min.Y
+
+	c.layoutStack = c.layoutStack[:len(c.layoutStack)-1]
+	c.containerStack = c.containerStack[:len(c.containerStack)-1]
 }
 
 func (c *Context) WindowEx(title string, rect image.Rectangle, opt Option, f func(res Res)) {
@@ -531,7 +542,7 @@ func (c *Context) WindowEx(title string, rect image.Rectangle, opt Option, f fun
 	if cnt == nil || !cnt.Open {
 		return
 	}
-	// push()
+
 	c.idStack = append(c.idStack, id)
 	defer c.popID()
 	// This is popped at endRootContainer.
@@ -541,18 +552,12 @@ func (c *Context) WindowEx(title string, rect image.Rectangle, opt Option, f fun
 		cnt.Rect = rect
 	}
 
-	// push()
-	c.containerStack = append(c.containerStack, cnt)
-	defer c.popContainer()
-
 	// push container to roots list and push head command
-	// push()
 	c.rootList = append(c.rootList, cnt)
 	cnt.HeadIdx = c.pushJump(-1)
 	defer func() {
 		// push tail 'goto' jump command and set head 'skip' command. the final steps
 		// on initing these are done in End
-		cnt := c.CurrentContainer()
 		cnt.TailIdx = c.pushJump(-1)
 		c.commandList[cnt.HeadIdx].jump.dstIdx = len(c.commandList) //- 1
 	}()
@@ -566,7 +571,6 @@ func (c *Context) WindowEx(title string, rect image.Rectangle, opt Option, f fun
 	// clipping is reset here in case a root-container is made within
 	// another root-containers's begin/end block; this prevents the inner
 	// root-container being clipped to the outer
-	// push()
 	c.clipStack = append(c.clipStack, unclippedRect)
 	defer c.popClipRect()
 
@@ -609,6 +613,7 @@ func (c *Context) WindowEx(title string, rect image.Rectangle, opt Option, f fun
 	}
 
 	c.pushContainerBody(cnt, body, opt)
+	defer c.popContainerBody()
 
 	// do `resize` handle
 	if (^opt & OptNoResize) != 0 {
@@ -666,9 +671,8 @@ func (c *Context) PanelEx(name string, opt Option, f func()) {
 		c.drawFrame(cnt.Rect, ColorPanelBG)
 	}
 
-	c.containerStack = append(c.containerStack, cnt)
 	c.pushContainerBody(cnt, cnt.Rect, opt)
-	defer c.popContainer()
+	defer c.popContainerBody()
 
 	c.pushClipRect(cnt.Body)
 	defer c.popClipRect()
