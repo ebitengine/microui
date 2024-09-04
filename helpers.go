@@ -105,15 +105,15 @@ func (c *Context) clipRect() image.Rectangle {
 	return c.clipStack[len(c.clipStack)-1]
 }
 
-func (c *Context) CheckClip(r image.Rectangle) int {
+func (c *Context) checkClip(r image.Rectangle) int {
 	cr := c.clipRect()
 	if !r.Overlaps(cr) {
-		return ClipAll
+		return clipAll
 	}
 	if r.In(cr) {
 		return 0
 	}
-	return ClipPart
+	return clipPart
 }
 
 func (c *Context) layout() *layout {

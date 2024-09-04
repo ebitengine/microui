@@ -75,11 +75,11 @@ func (c *Context) DrawBox(rect image.Rectangle, color color.Color) {
 
 func (c *Context) DrawText(str string, pos image.Point, color color.Color) {
 	rect := image.Rect(pos.X, pos.Y, pos.X+textWidth(str), pos.Y+textHeight())
-	clipped := c.CheckClip(rect)
-	if clipped == ClipAll {
+	clipped := c.checkClip(rect)
+	if clipped == clipAll {
 		return
 	}
-	if clipped == ClipPart {
+	if clipped == clipPart {
 		c.SetClip(c.clipRect())
 	}
 	// add command
@@ -95,11 +95,11 @@ func (c *Context) DrawText(str string, pos image.Point, color color.Color) {
 
 func (c *Context) DrawIcon(icon Icon, rect image.Rectangle, color color.Color) {
 	// do clip command if the rect isn't fully contained within the cliprect
-	clipped := c.CheckClip(rect)
-	if clipped == ClipAll {
+	clipped := c.checkClip(rect)
+	if clipped == clipAll {
 		return
 	}
-	if clipped == ClipPart {
+	if clipped == clipPart {
 		c.SetClip(c.clipRect())
 	}
 	// do icon command

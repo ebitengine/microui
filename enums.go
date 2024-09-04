@@ -4,8 +4,8 @@
 package microui
 
 const (
-	ClipPart = 1 + iota
-	ClipAll
+	clipPart = 1 + iota
+	clipAll
 )
 
 const (
