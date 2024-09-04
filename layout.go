@@ -48,8 +48,6 @@ func (c *Context) SetLayoutRow(items int, widths []int, height int) {
 
 func (c *Context) layoutNext() image.Rectangle {
 	layout := c.layout()
-	style := c.Style
-	var res image.Rectangle
 
 	// handle next row
 	if layout.itemIndex == layout.items {
@@ -57,7 +55,7 @@ func (c *Context) layoutNext() image.Rectangle {
 	}
 
 	// position
-	res = image.Rect(layout.position.X, layout.position.Y, layout.position.X+res.Dx(), layout.position.Y+res.Dy())
+	res := image.Rect(layout.position.X, layout.position.Y, layout.position.X, layout.position.Y)
 
 	// size
 	if layout.items > 0 {
@@ -67,10 +65,10 @@ func (c *Context) layoutNext() image.Rectangle {
 	}
 	res.Max.Y = res.Min.Y + layout.size.Y
 	if res.Dx() == 0 {
-		res.Max.X = res.Min.X + style.Size.X + style.Padding*2
+		res.Max.X = res.Min.X + c.Style.Size.X + c.Style.Padding*2
 	}
 	if res.Dy() == 0 {
-		res.Max.Y = res.Min.Y + style.Size.Y + style.Padding*2
+		res.Max.Y = res.Min.Y + c.Style.Size.Y + c.Style.Padding*2
 	}
 	if res.Dx() < 0 {
 		res.Max.X += layout.body.Dx() - res.Min.X + 1
@@ -82,8 +80,8 @@ func (c *Context) layoutNext() image.Rectangle {
 	layout.itemIndex++
 
 	// update position
-	layout.position.X += res.Dx() + style.Spacing
-	layout.nextRow = max(layout.nextRow, res.Max.Y+style.Spacing)
+	layout.position.X += res.Dx() + c.Style.Spacing
+	layout.nextRow = max(layout.nextRow, res.Max.Y+c.Style.Spacing)
 
 	// apply body offset
 	res = res.Add(layout.body.Min)
