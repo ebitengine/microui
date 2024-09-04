@@ -35,7 +35,7 @@ func (g *Game) testWindow() {
 		// window info
 		if g.ctx.Header("Window Info") != 0 {
 			win := g.ctx.CurrentContainer()
-			g.ctx.SetLayoutRow(2, []int{54, -1}, 0)
+			g.ctx.SetLayoutRow([]int{54, -1}, 0)
 			g.ctx.Label("Position:")
 			g.ctx.Label(fmt.Sprintf("%d, %d", win.Rect.Min.X, win.Rect.Min.Y))
 			g.ctx.Label("Size:")
@@ -44,7 +44,7 @@ func (g *Game) testWindow() {
 
 		// labels + buttons
 		if g.ctx.HeaderEx("Test Buttons", microui.OptExpanded) != 0 {
-			g.ctx.SetLayoutRow(3, []int{100, -110, -1}, 0)
+			g.ctx.SetLayoutRow([]int{100, -110, -1}, 0)
 			g.ctx.Label("Test buttons 1:")
 			if g.ctx.Button("Button 1") != 0 {
 				g.writeLog("Pressed button 1")
@@ -67,7 +67,7 @@ func (g *Game) testWindow() {
 
 		// tree
 		if g.ctx.HeaderEx("Tree and Text", microui.OptExpanded) != 0 {
-			g.ctx.SetLayoutRow(2, []int{140, -1}, 0)
+			g.ctx.SetLayoutRow([]int{140, -1}, 0)
 			g.ctx.LayoutColumn(func() {
 				g.ctx.TreeNode("Test 1", func(res microui.Res) {
 					g.ctx.TreeNode("Test 1a", func(res microui.Res) {
@@ -84,7 +84,7 @@ func (g *Game) testWindow() {
 					})
 				})
 				g.ctx.TreeNode("Test 2", func(res microui.Res) {
-					g.ctx.SetLayoutRow(2, []int{54, 54}, 0)
+					g.ctx.SetLayoutRow([]int{54, 54}, 0)
 					if g.ctx.Button("Button 3") != 0 {
 						g.writeLog("Pressed button 3")
 					}
@@ -112,10 +112,10 @@ func (g *Game) testWindow() {
 
 		// background color sliders
 		if g.ctx.HeaderEx("Background Color", microui.OptExpanded) != 0 {
-			g.ctx.SetLayoutRow(2, []int{-78, -1}, 74)
+			g.ctx.SetLayoutRow([]int{-78, -1}, 74)
 			// sliders
 			g.ctx.LayoutColumn(func() {
-				g.ctx.SetLayoutRow(2, []int{46, -1}, 0)
+				g.ctx.SetLayoutRow([]int{46, -1}, 0)
 				g.ctx.Label("Red:")
 				g.ctx.Slider(&g.bg[0], 0, 255)
 				g.ctx.Label("Green:")
@@ -134,7 +134,7 @@ func (g *Game) testWindow() {
 
 		// Number
 		if g.ctx.HeaderEx("Number", microui.OptExpanded) != 0 {
-			g.ctx.SetLayoutRow(1, []int{-1}, 0)
+			g.ctx.SetLayoutRow([]int{-1}, 0)
 			g.ctx.Number(&g.num1, 0.1)
 			g.ctx.SliderEx(&g.num2, 0, 10, 0.1, "%.2f", microui.OptAlignCenter)
 		}
@@ -144,11 +144,11 @@ func (g *Game) testWindow() {
 func (g *Game) logWindow() {
 	g.ctx.Window("Log Window", image.Rect(350, 40, 650, 240), func(res microui.Res) {
 		// output text panel
-		g.ctx.SetLayoutRow(1, []int{-1}, -25)
+		g.ctx.SetLayoutRow([]int{-1}, -25)
 		var panel *microui.Container
 		g.ctx.Panel("Log Output", func() {
 			panel = g.ctx.CurrentContainer()
-			g.ctx.SetLayoutRow(1, []int{-1}, -1)
+			g.ctx.SetLayoutRow([]int{-1}, -1)
 			g.ctx.Text(g.logBuf)
 		})
 		if g.logUpdated {
@@ -158,7 +158,7 @@ func (g *Game) logWindow() {
 
 		// input textbox + submit button
 		var submitted bool
-		g.ctx.SetLayoutRow(2, []int{-70, -1}, 0)
+		g.ctx.SetLayoutRow([]int{-70, -1}, 0)
 		if g.ctx.TextBox(&g.logSubmitBuf)&microui.ResSubmit != 0 {
 			g.ctx.SetFocus(g.ctx.LastID)
 			submitted = true
@@ -208,7 +208,7 @@ var (
 func (g *Game) styleWindow() {
 	g.ctx.Window("Style Editor", image.Rect(350, 250, 650, 490), func(res microui.Res) {
 		sw := int(float64(g.ctx.CurrentContainer().Body.Dx()) * 0.14)
-		g.ctx.SetLayoutRow(6, []int{80, sw, sw, sw, sw, -1}, 0)
+		g.ctx.SetLayoutRow([]int{80, sw, sw, sw, sw, -1}, 0)
 		for _, c := range colors {
 			g.ctx.Label(c.Label)
 			g.byteSlider(&fcolors[c.ColorID].R, &g.ctx.Style.Colors[c.ColorID].R, 0, 255)

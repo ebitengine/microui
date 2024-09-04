@@ -11,7 +11,7 @@ func (c *Context) pushLayout(body image.Rectangle, scroll image.Point) {
 		body: body.Sub(scroll),
 		max:  image.Pt(-0x1000000, -0x1000000),
 	})
-	c.SetLayoutRow(1, []int{0}, 0)
+	c.SetLayoutRow([]int{0}, 0)
 }
 
 func (c *Context) LayoutColumn(f func()) {
@@ -32,15 +32,15 @@ func (c *Context) LayoutColumn(f func()) {
 	})
 }
 
-func (c *Context) SetLayoutRow(items int, widths []int, height int) {
+func (c *Context) SetLayoutRow(widths []int, height int) {
 	layout := c.layout()
 
 	if len(layout.widths) < len(widths) {
 		layout.widths = append(layout.widths, make([]int, len(widths)-len(layout.widths))...)
 	}
 	copy(layout.widths[:], widths)
+	layout.widths = layout.widths[:len(widths)]
 
-	layout.items = items
 	layout.position = image.Pt(layout.indent, layout.nextRow)
 	layout.height = height
 	layout.itemIndex = 0
@@ -50,15 +50,15 @@ func (c *Context) layoutNext() image.Rectangle {
 	layout := c.layout()
 
 	// handle next row
-	if layout.itemIndex == layout.items {
-		c.SetLayoutRow(layout.items, nil, layout.height)
+	if layout.itemIndex == len(layout.widths) {
+		c.SetLayoutRow(layout.widths, layout.height)
 	}
 
 	// position
 	res := image.Rect(layout.position.X, layout.position.Y, layout.position.X, layout.position.Y)
 
 	// size
-	if layout.items > 0 {
+	if len(layout.widths) > 0 {
 		res.Max.X = res.Min.X + layout.widths[layout.itemIndex]
 	}
 	res.Max.Y = res.Min.Y + layout.height

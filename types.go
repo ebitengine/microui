@@ -50,7 +50,6 @@ type layout struct {
 	height    int
 	max       image.Point
 	widths    []int
-	items     int
 	itemIndex int
 	nextRow   int
 	indent    int

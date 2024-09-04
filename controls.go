@@ -102,7 +102,7 @@ func (c *Context) Text(text string) {
 	color := c.Style.Colors[ColorText]
 	c.LayoutColumn(func() {
 		var endIdx, p int
-		c.SetLayoutRow(1, []int{-1}, textHeight())
+		c.SetLayoutRow([]int{-1}, textHeight())
 		for endIdx < len(text) {
 			c.Control(0, 0, func(r image.Rectangle) Res {
 				w := 0
@@ -334,7 +334,7 @@ func (c *Context) NumberEx(value *float64, step float64, format string, opt Opti
 func (c *Context) header(label string, istreenode bool, opt Option) Res {
 	id := c.id([]byte(label))
 	idx := c.poolGet(c.treeNodePool[:], id)
-	c.SetLayoutRow(1, []int{-1}, 0)
+	c.SetLayoutRow([]int{-1}, 0)
 
 	active := idx >= 0
 	var expanded bool
