@@ -524,36 +524,6 @@ func (c *Context) pushContainerBody(cnt *Container, body image.Rectangle, opt Op
 	cnt.Body = body
 }
 
-func (c *Context) beginRootContainer(cnt *Container) {
-	// push()
-	c.containerStack = append(c.containerStack, cnt)
-	// push container to roots list and push head command
-	// push()
-	c.rootList = append(c.rootList, cnt)
-	cnt.HeadIdx = c.pushJump(-1)
-	// set as hover root if the mouse is overlapping this container and it has a
-	// higher zindex than the current hover root
-	if c.mousePos.In(cnt.Rect) && (c.nextHoverRoot == nil || cnt.ZIndex > c.nextHoverRoot.ZIndex) {
-		c.nextHoverRoot = cnt
-	}
-	// clipping is reset here in case a root-container is made within
-	// another root-containers's begin/end block; this prevents the inner
-	// root-container being clipped to the outer
-	// push()
-	c.clipStack = append(c.clipStack, unclippedRect)
-}
-
-func (c *Context) endRootContainer() {
-	// push tail 'goto' jump command and set head 'skip' command. the final steps
-	// on initing these are done in End
-	cnt := c.CurrentContainer()
-	cnt.TailIdx = c.pushJump(-1)
-	c.commandList[cnt.HeadIdx].jump.dstIdx = len(c.commandList) //- 1
-	// pop base clip rect and container
-	c.popClipRect()
-	c.popContainer()
-}
-
 func (c *Context) WindowEx(title string, rect image.Rectangle, opt Option, f func(res Res)) {
 	id := c.id([]byte(title))
 
@@ -570,8 +540,36 @@ func (c *Context) WindowEx(title string, rect image.Rectangle, opt Option, f fun
 	if cnt.Rect.Dx() == 0 {
 		cnt.Rect = rect
 	}
-	c.beginRootContainer(cnt)
-	defer c.endRootContainer()
+
+	// push()
+	c.containerStack = append(c.containerStack, cnt)
+	defer c.popContainer()
+
+	// push container to roots list and push head command
+	// push()
+	c.rootList = append(c.rootList, cnt)
+	cnt.HeadIdx = c.pushJump(-1)
+	defer func() {
+		// push tail 'goto' jump command and set head 'skip' command. the final steps
+		// on initing these are done in End
+		cnt := c.CurrentContainer()
+		cnt.TailIdx = c.pushJump(-1)
+		c.commandList[cnt.HeadIdx].jump.dstIdx = len(c.commandList) //- 1
+	}()
+
+	// set as hover root if the mouse is overlapping this container and it has a
+	// higher zindex than the current hover root
+	if c.mousePos.In(cnt.Rect) && (c.nextHoverRoot == nil || cnt.ZIndex > c.nextHoverRoot.ZIndex) {
+		c.nextHoverRoot = cnt
+	}
+
+	// clipping is reset here in case a root-container is made within
+	// another root-containers's begin/end block; this prevents the inner
+	// root-container being clipped to the outer
+	// push()
+	c.clipStack = append(c.clipStack, unclippedRect)
+	defer c.popClipRect()
+
 	body := cnt.Rect
 	rect = body
 
@@ -611,8 +609,6 @@ func (c *Context) WindowEx(title string, rect image.Rectangle, opt Option, f fun
 	}
 
 	c.pushContainerBody(cnt, body, opt)
-	// p.popContainer is called at endRootContainer.
-	// TODO: This is tricky. Refactor this.
 
 	// do `resize` handle
 	if (^opt & OptNoResize) != 0 {
@@ -640,6 +636,7 @@ func (c *Context) WindowEx(title string, rect image.Rectangle, opt Option, f fun
 
 	c.pushClipRect(cnt.Body)
 	defer c.popClipRect()
+
 	f(ResActive)
 }
 
@@ -668,11 +665,13 @@ func (c *Context) PanelEx(name string, opt Option, f func()) {
 	if (^opt & OptNoFrame) != 0 {
 		c.drawFrame(cnt.Rect, ColorPanelBG)
 	}
-	// push()
+
 	c.containerStack = append(c.containerStack, cnt)
 	c.pushContainerBody(cnt, cnt.Rect, opt)
 	defer c.popContainer()
+
 	c.pushClipRect(cnt.Body)
 	defer c.popClipRect()
+
 	f()
 }
