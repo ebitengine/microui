@@ -531,7 +531,6 @@ func (c *Context) WindowEx(title string, rect image.Rectangle, opt Option, f fun
 	if cnt == nil || !cnt.Open {
 		return
 	}
-	// push()
 	c.idStack = append(c.idStack, id)
 	defer c.popID()
 	// This is popped at endRootContainer.
@@ -541,12 +540,10 @@ func (c *Context) WindowEx(title string, rect image.Rectangle, opt Option, f fun
 		cnt.Rect = rect
 	}
 
-	// push()
 	c.containerStack = append(c.containerStack, cnt)
 	defer c.popContainer()
 
 	// push container to roots list and push head command
-	// push()
 	c.rootList = append(c.rootList, cnt)
 	cnt.HeadIdx = c.pushJump(-1)
 	defer func() {
@@ -566,7 +563,6 @@ func (c *Context) WindowEx(title string, rect image.Rectangle, opt Option, f fun
 	// clipping is reset here in case a root-container is made within
 	// another root-containers's begin/end block; this prevents the inner
 	// root-container being clipped to the outer
-	// push()
 	c.clipStack = append(c.clipStack, unclippedRect)
 	defer c.popClipRect()
 
