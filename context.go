@@ -8,7 +8,7 @@ import (
 )
 
 func (c *Context) drawFrame(rect image.Rectangle, colorid int) {
-	c.DrawRect(rect, c.Style.Colors[colorid])
+	c.drawRect(rect, c.Style.Colors[colorid])
 	if colorid == ColorScrollBase ||
 		colorid == ColorScrollThumb ||
 		colorid == ColorTitleBG {
@@ -17,7 +17,7 @@ func (c *Context) drawFrame(rect image.Rectangle, colorid int) {
 
 	// draw border
 	if c.Style.Colors[ColorBorder].A != 0 {
-		c.DrawBox(rect.Inset(-1), c.Style.Colors[ColorBorder])
+		c.drawBox(rect.Inset(-1), c.Style.Colors[ColorBorder])
 	}
 }
 

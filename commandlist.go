@@ -6,6 +6,8 @@ package microui
 import (
 	"image"
 	"image/color"
+
+	"github.com/hajimehoshi/ebiten/v2"
 )
 
 // pushCommand adds a new command with type cmd_type to command_list
@@ -50,14 +52,12 @@ func (c *Context) pushJump(dstIdx int) int {
 	return len(c.commandList) - 1
 }
 
-// SetClip pushes a new clip command
-func (c *Context) SetClip(rect image.Rectangle) {
+func (c *Context) setClip(rect image.Rectangle) {
 	cmd := c.pushCommand(commandClip)
 	cmd.clip.rect = rect
 }
 
-// DrawRect pushes a new rect command
-func (c *Context) DrawRect(rect image.Rectangle, color color.Color) {
+func (c *Context) drawRect(rect image.Rectangle, color color.Color) {
 	rect2 := rect.Intersect(c.clipRect())
 	if rect2.Dx() > 0 && rect2.Dy() > 0 {
 		cmd := c.pushCommand(commandRect)
@@ -66,21 +66,21 @@ func (c *Context) DrawRect(rect image.Rectangle, color color.Color) {
 	}
 }
 
-func (c *Context) DrawBox(rect image.Rectangle, color color.Color) {
-	c.DrawRect(image.Rect(rect.Min.X+1, rect.Min.Y, rect.Max.X-1, rect.Min.Y+1), color)
-	c.DrawRect(image.Rect(rect.Min.X+1, rect.Max.Y-1, rect.Max.X-1, rect.Max.Y), color)
-	c.DrawRect(image.Rect(rect.Min.X, rect.Min.Y, rect.Min.X+1, rect.Max.Y), color)
-	c.DrawRect(image.Rect(rect.Max.X-1, rect.Min.Y, rect.Max.X, rect.Max.Y), color)
+func (c *Context) drawBox(rect image.Rectangle, color color.Color) {
+	c.drawRect(image.Rect(rect.Min.X+1, rect.Min.Y, rect.Max.X-1, rect.Min.Y+1), color)
+	c.drawRect(image.Rect(rect.Min.X+1, rect.Max.Y-1, rect.Max.X-1, rect.Max.Y), color)
+	c.drawRect(image.Rect(rect.Min.X, rect.Min.Y, rect.Min.X+1, rect.Max.Y), color)
+	c.drawRect(image.Rect(rect.Max.X-1, rect.Min.Y, rect.Max.X, rect.Max.Y), color)
 }
 
-func (c *Context) DrawText(str string, pos image.Point, color color.Color) {
+func (c *Context) drawText(str string, pos image.Point, color color.Color) {
 	rect := image.Rect(pos.X, pos.Y, pos.X+textWidth(str), pos.Y+textHeight())
 	clipped := c.checkClip(rect)
 	if clipped == clipAll {
 		return
 	}
 	if clipped == clipPart {
-		c.SetClip(c.clipRect())
+		c.setClip(c.clipRect())
 	}
 	// add command
 	cmd := c.pushCommand(commandText)
@@ -89,18 +89,18 @@ func (c *Context) DrawText(str string, pos image.Point, color color.Color) {
 	cmd.text.color = color
 	// reset clipping if it was set
 	if clipped != 0 {
-		c.SetClip(unclippedRect)
+		c.setClip(unclippedRect)
 	}
 }
 
-func (c *Context) DrawIcon(icon Icon, rect image.Rectangle, color color.Color) {
+func (c *Context) drawIcon(icon Icon, rect image.Rectangle, color color.Color) {
 	// do clip command if the rect isn't fully contained within the cliprect
 	clipped := c.checkClip(rect)
 	if clipped == clipAll {
 		return
 	}
 	if clipped == clipPart {
-		c.SetClip(c.clipRect())
+		c.setClip(c.clipRect())
 	}
 	// do icon command
 	cmd := c.pushCommand(commandIcon)
@@ -109,6 +109,13 @@ func (c *Context) DrawIcon(icon Icon, rect image.Rectangle, color color.Color) {
 	cmd.icon.color = color
 	// reset clipping if it was set
 	if clipped != 0 {
-		c.SetClip(unclippedRect)
+		c.setClip(unclippedRect)
 	}
+}
+
+func (c *Context) DrawControl(f func(screen *ebiten.Image)) {
+	c.setClip(c.clipRect())
+	defer c.setClip(unclippedRect)
+	cmd := c.pushCommand(commandDraw)
+	cmd.draw.f = f
 }

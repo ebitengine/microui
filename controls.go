@@ -49,7 +49,7 @@ func (c *Context) DrawControlText(str string, rect image.Rectangle, colorid int,
 	} else {
 		pos.X = rect.Min.X + c.Style.Padding
 	}
-	c.DrawText(str, pos, c.Style.Colors[colorid])
+	c.drawText(str, pos, c.Style.Colors[colorid])
 	c.popClipRect()
 }
 
@@ -123,7 +123,7 @@ func (c *Context) Text(text string) {
 					endIdx = p
 					p++
 				}
-				c.DrawText(text[startIdx:endIdx], r.Min, color)
+				c.drawText(text[startIdx:endIdx], r.Min, color)
 				p = endIdx + 1
 				return 0
 			})
@@ -161,7 +161,7 @@ func (c *Context) ButtonEx(label string, icon Icon, opt Option) Res {
 			c.DrawControlText(label, r, ColorText, opt)
 		}
 		if icon != 0 {
-			c.DrawIcon(icon, r, c.Style.Colors[ColorText])
+			c.drawIcon(icon, r, c.Style.Colors[ColorText])
 		}
 		return res
 	})
@@ -181,7 +181,7 @@ func (c *Context) Checkbox(label string, state *bool) Res {
 		// draw
 		c.DrawControlFrame(id, box, ColorBase, 0)
 		if *state {
-			c.DrawIcon(IconCheck, box, c.Style.Colors[ColorText])
+			c.drawIcon(IconCheck, box, c.Style.Colors[ColorText])
 		}
 		r = image.Rect(r.Min.X+box.Dx(), r.Min.Y, r.Max.X, r.Max.Y)
 		c.DrawControlText(label, r, ColorText, 0)
@@ -222,8 +222,8 @@ func (c *Context) textBoxRaw(buf *string, id ID, opt Option) Res {
 			textx := r.Min.X + min(ofx, c.Style.Padding)
 			texty := r.Min.Y + (r.Dy()-texth)/2
 			c.pushClipRect(r)
-			c.DrawText(*buf, image.Pt(textx, texty), color)
-			c.DrawRect(image.Rect(textx+textw, texty, textx+textw+1, texty+texth), color)
+			c.drawText(*buf, image.Pt(textx, texty), color)
+			c.drawRect(image.Rect(textx+textw, texty, textx+textw+1, texty+texth), color)
 			c.popClipRect()
 		} else {
 			c.DrawControlText(*buf, r, ColorText, opt)
@@ -381,7 +381,7 @@ func (c *Context) header(label string, istreenode bool, opt Option) Res {
 		} else {
 			icon = IconCollapsed
 		}
-		c.DrawIcon(
+		c.drawIcon(
 			icon,
 			image.Rect(r.Min.X, r.Min.Y, r.Min.X+r.Dy(), r.Max.Y),
 			c.Style.Colors[ColorText],
@@ -596,7 +596,7 @@ func (c *Context) WindowEx(title string, rect image.Rectangle, opt Option, f fun
 			id := c.id([]byte("!close"))
 			r := image.Rect(tr.Max.X-tr.Dy(), tr.Min.Y, tr.Max.X, tr.Max.Y)
 			tr.Max.X -= r.Dx()
-			c.DrawIcon(IconClose, r, c.Style.Colors[ColorTitleText])
+			c.drawIcon(IconClose, r, c.Style.Colors[ColorTitleText])
 			c.updateControl(id, r, opt)
 			if c.mousePressed == mouseLeft && id == c.focus {
 				cnt.Open = false

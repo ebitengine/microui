@@ -14,6 +14,7 @@ const (
 	commandRect
 	commandText
 	commandIcon
+	commandDraw
 )
 
 const (

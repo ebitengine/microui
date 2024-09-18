@@ -6,6 +6,8 @@ package microui
 import (
 	"image"
 	"image/color"
+
+	"github.com/hajimehoshi/ebiten/v2"
 )
 
 type ID uint64
@@ -44,6 +46,10 @@ type iconCommand struct {
 	color color.Color
 }
 
+type drawCommand struct {
+	f func(screen *ebiten.Image)
+}
+
 type layout struct {
 	body      image.Rectangle
 	position  image.Point
@@ -64,6 +70,7 @@ type command struct {
 	rect rectCommand // type 3
 	text textCommand // type 4
 	icon iconCommand // type 5
+	draw drawCommand // type 6
 }
 
 type Container struct {

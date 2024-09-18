@@ -8,6 +8,9 @@ import (
 	"image"
 	"image/color"
 
+	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/hajimehoshi/ebiten/v2/vector"
+
 	"github.com/ebitengine/microui"
 )
 
@@ -125,7 +128,16 @@ func (g *Game) testWindow() {
 			})
 			// color preview
 			g.ctx.Control(0, 0, func(r image.Rectangle) microui.Res {
-				g.ctx.DrawRect(r, color.RGBA{byte(g.bg[0]), byte(g.bg[1]), byte(g.bg[2]), 255})
+				g.ctx.DrawControl(func(screen *ebiten.Image) {
+					vector.DrawFilledRect(
+						screen,
+						float32(r.Min.X),
+						float32(r.Min.Y),
+						float32(r.Dx()),
+						float32(r.Dy()),
+						color.RGBA{byte(g.bg[0]), byte(g.bg[1]), byte(g.bg[2]), 255},
+						false)
+				})
 				clr := fmt.Sprintf("#%02X%02X%02X", int(g.bg[0]), int(g.bg[1]), int(g.bg[2]))
 				g.ctx.DrawControlText(clr, r, microui.ColorText, microui.OptAlignCenter)
 				return 0
@@ -216,7 +228,17 @@ func (g *Game) styleWindow() {
 			g.byteSlider(&fcolors[c.ColorID].B, &g.ctx.Style.Colors[c.ColorID].B, 0, 255)
 			g.byteSlider(&fcolors[c.ColorID].A, &g.ctx.Style.Colors[c.ColorID].A, 0, 255)
 			g.ctx.Control(0, 0, func(r image.Rectangle) microui.Res {
-				g.ctx.DrawRect(r, g.ctx.Style.Colors[c.ColorID])
+				clr := g.ctx.Style.Colors[c.ColorID]
+				g.ctx.DrawControl(func(target *ebiten.Image) {
+					vector.DrawFilledRect(
+						target,
+						float32(r.Min.X),
+						float32(r.Min.Y),
+						float32(r.Dx()),
+						float32(r.Dy()),
+						clr,
+						false)
+				})
 				return 0
 			})
 		}

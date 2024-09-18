@@ -127,6 +127,8 @@ func (c *Context) Draw(screen *ebiten.Image) {
 			op.GeoM.Translate(float64(x), float64(y))
 			op.ColorScale.ScaleWithColor(cmd.icon.color)
 			target.DrawImage(img, op)
+		case commandDraw:
+			cmd.draw.f(target)
 		case commandClip:
 			target = screen.SubImage(cmd.clip.rect).(*ebiten.Image)
 		}
