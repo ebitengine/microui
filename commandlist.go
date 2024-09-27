@@ -74,7 +74,7 @@ func (c *Context) drawBox(rect image.Rectangle, color color.Color) {
 }
 
 func (c *Context) drawText(str string, pos image.Point, color color.Color) {
-	rect := image.Rect(pos.X, pos.Y, pos.X+textWidth(str), pos.Y+textHeight())
+	rect := image.Rect(pos.X, pos.Y, pos.X+textWidth(str), pos.Y+lineHeight())
 	clipped := c.checkClip(rect)
 	if clipped == clipAll {
 		return

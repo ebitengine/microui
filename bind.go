@@ -22,8 +22,8 @@ func textWidth(str string) int {
 	return int(text.Advance(str, face))
 }
 
-func textHeight() int {
-	return int(face.Metrics().HAscent + face.Metrics().HDescent)
+func lineHeight() int {
+	return int(face.Metrics().HAscent + face.Metrics().HDescent + face.Metrics().HLineGap)
 }
 
 var (

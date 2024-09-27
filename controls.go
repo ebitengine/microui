@@ -41,7 +41,7 @@ func (c *Context) DrawControlText(str string, rect image.Rectangle, colorid int,
 	var pos image.Point
 	tw := textWidth(str)
 	c.pushClipRect(rect)
-	pos.Y = rect.Min.Y + (rect.Dy()-textHeight())/2
+	pos.Y = rect.Min.Y + (rect.Dy()-lineHeight())/2
 	if (opt & OptAlignCenter) != 0 {
 		pos.X = rect.Min.X + (rect.Dx()-tw)/2
 	} else if (opt & OptAlignRight) != 0 {
@@ -102,7 +102,7 @@ func (c *Context) Text(text string) {
 	color := c.Style.Colors[ColorText]
 	c.LayoutColumn(func() {
 		var endIdx, p int
-		c.SetLayoutRow([]int{-1}, textHeight())
+		c.SetLayoutRow([]int{-1}, lineHeight())
 		for endIdx < len(text) {
 			c.Control(0, 0, func(r image.Rectangle) Res {
 				w := 0
@@ -217,7 +217,7 @@ func (c *Context) textBoxRaw(buf *string, id ID, opt Option) Res {
 		if c.focus == id {
 			color := c.Style.Colors[ColorText]
 			textw := textWidth(*buf)
-			texth := textHeight()
+			texth := lineHeight()
 			ofx := r.Dx() - c.Style.Padding - textw - 1
 			textx := r.Min.X + min(ofx, c.Style.Padding)
 			texty := r.Min.Y + (r.Dy()-texth)/2
