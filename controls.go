@@ -37,7 +37,7 @@ func (c *Context) drawControlFrame(id ID, rect image.Rectangle, colorid int, opt
 	c.drawFrame(rect, colorid)
 }
 
-func (c *Context) DrawControlText(str string, rect image.Rectangle, colorid int, opt Option) {
+func (c *Context) drawControlText(str string, rect image.Rectangle, colorid int, opt Option) {
 	var pos image.Point
 	tw := textWidth(str)
 	c.pushClipRect(rect)
@@ -133,7 +133,7 @@ func (c *Context) Text(text string) {
 
 func (c *Context) Label(text string) {
 	c.Control(0, 0, func(r image.Rectangle) Res {
-		c.DrawControlText(text, r, ColorText, 0)
+		c.drawControlText(text, r, ColorText, 0)
 		return 0
 	})
 }
@@ -158,7 +158,7 @@ func (c *Context) ButtonEx(label string, icon Icon, opt Option) Res {
 		// draw
 		c.drawControlFrame(id, r, ColorButton, opt)
 		if len(label) > 0 {
-			c.DrawControlText(label, r, ColorText, opt)
+			c.drawControlText(label, r, ColorText, opt)
 		}
 		if icon != 0 {
 			c.drawIcon(icon, r, c.Style.Colors[ColorText])
@@ -184,7 +184,7 @@ func (c *Context) Checkbox(label string, state *bool) Res {
 			c.drawIcon(IconCheck, box, c.Style.Colors[ColorText])
 		}
 		r = image.Rect(r.Min.X+box.Dx(), r.Min.Y, r.Max.X, r.Max.Y)
-		c.DrawControlText(label, r, ColorText, 0)
+		c.drawControlText(label, r, ColorText, 0)
 		return res
 	})
 }
@@ -226,7 +226,7 @@ func (c *Context) textBoxRaw(buf *string, id ID, opt Option) Res {
 			c.drawRect(image.Rect(textx+textw, texty, textx+textw+1, texty+texth), color)
 			c.popClipRect()
 		} else {
-			c.DrawControlText(*buf, r, ColorText, opt)
+			c.drawControlText(*buf, r, ColorText, opt)
 		}
 		return res
 	})
@@ -294,7 +294,7 @@ func (c *Context) SliderEx(value *float64, low, high, step float64, format strin
 		c.drawControlFrame(id, thumb, ColorButton, opt)
 		// draw text
 		text := fmt.Sprintf(format, v)
-		c.DrawControlText(text, r, ColorText, opt)
+		c.drawControlText(text, r, ColorText, opt)
 
 		return res
 	})
@@ -325,7 +325,7 @@ func (c *Context) NumberEx(value *float64, step float64, format string, opt Opti
 		c.drawControlFrame(id, r, ColorBase, opt)
 		// draw text
 		text := fmt.Sprintf(format, *value)
-		c.DrawControlText(text, r, ColorText, opt)
+		c.drawControlText(text, r, ColorText, opt)
 
 		return res
 	})
@@ -387,7 +387,7 @@ func (c *Context) header(label string, istreenode bool, opt Option) Res {
 			c.Style.Colors[ColorText],
 		)
 		r.Min.X += r.Dy() - c.Style.Padding
-		c.DrawControlText(label, r, ColorText, 0)
+		c.drawControlText(label, r, ColorText, 0)
 
 		if expanded {
 			return ResActive
@@ -584,7 +584,7 @@ func (c *Context) WindowEx(title string, rect image.Rectangle, opt Option, f fun
 		if (^opt & OptNoTitle) != 0 {
 			id := c.id([]byte("!title"))
 			c.updateControl(id, tr, opt)
-			c.DrawControlText(title, tr, ColorTitleText, opt)
+			c.drawControlText(title, tr, ColorTitleText, opt)
 			if id == c.focus && c.mouseDown == mouseLeft {
 				cnt.Rect = cnt.Rect.Add(c.mouseDelta)
 			}

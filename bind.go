@@ -16,14 +16,18 @@ import (
 	"github.com/hajimehoshi/ebiten/v2/vector"
 )
 
-var face = text.NewGoXFace(bitmapfont.Face)
+var fontFace = text.NewGoXFace(bitmapfont.Face)
+
+func DrawText(dst *ebiten.Image, str string, op *text.DrawOptions) {
+	text.Draw(dst, str, fontFace, op)
+}
 
 func textWidth(str string) int {
-	return int(text.Advance(str, face))
+	return int(text.Advance(str, fontFace))
 }
 
 func lineHeight() int {
-	return int(face.Metrics().HAscent + face.Metrics().HDescent + face.Metrics().HLineGap)
+	return int(fontFace.Metrics().HAscent + fontFace.Metrics().HDescent + fontFace.Metrics().HLineGap)
 }
 
 var (
@@ -115,7 +119,7 @@ func (c *Context) Draw(screen *ebiten.Image) {
 			op := &text.DrawOptions{}
 			op.GeoM.Translate(float64(cmd.text.pos.X), float64(cmd.text.pos.Y))
 			op.ColorScale.ScaleWithColor(cmd.text.color)
-			text.Draw(target, cmd.text.str, face, op)
+			text.Draw(target, cmd.text.str, fontFace, op)
 		case commandIcon:
 			img := iconImage(cmd.icon.icon)
 			if img == nil {

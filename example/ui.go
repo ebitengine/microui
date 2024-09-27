@@ -9,6 +9,7 @@ import (
 	"image/color"
 
 	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/hajimehoshi/ebiten/v2/text/v2"
 	"github.com/hajimehoshi/ebiten/v2/vector"
 
 	"github.com/ebitengine/microui"
@@ -137,9 +138,13 @@ func (g *Game) testWindow() {
 						float32(r.Dy()),
 						color.RGBA{byte(g.bg[0]), byte(g.bg[1]), byte(g.bg[2]), 255},
 						false)
+					txt := fmt.Sprintf("#%02X%02X%02X", int(g.bg[0]), int(g.bg[1]), int(g.bg[2]))
+					op := &text.DrawOptions{}
+					op.GeoM.Translate(float64((r.Min.X+r.Max.X)/2), float64((r.Min.Y+r.Max.Y)/2))
+					op.PrimaryAlign = text.AlignCenter
+					op.SecondaryAlign = text.AlignCenter
+					microui.DrawText(screen, txt, op)
 				})
-				clr := fmt.Sprintf("#%02X%02X%02X", int(g.bg[0]), int(g.bg[1]), int(g.bg[2]))
-				g.ctx.DrawControlText(clr, r, microui.ColorText, microui.OptAlignCenter)
 				return 0
 			})
 		}
