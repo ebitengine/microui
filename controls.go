@@ -25,7 +25,7 @@ func (c *Context) inHoverRoot() bool {
 	return false
 }
 
-func (c *Context) DrawControlFrame(id ID, rect image.Rectangle, colorid int, opt Option) {
+func (c *Context) drawControlFrame(id ID, rect image.Rectangle, colorid int, opt Option) {
 	if (opt & OptNoFrame) != 0 {
 		return
 	}
@@ -156,7 +156,7 @@ func (c *Context) ButtonEx(label string, icon Icon, opt Option) Res {
 			res |= ResSubmit
 		}
 		// draw
-		c.DrawControlFrame(id, r, ColorButton, opt)
+		c.drawControlFrame(id, r, ColorButton, opt)
 		if len(label) > 0 {
 			c.DrawControlText(label, r, ColorText, opt)
 		}
@@ -179,7 +179,7 @@ func (c *Context) Checkbox(label string, state *bool) Res {
 			*state = !*state
 		}
 		// draw
-		c.DrawControlFrame(id, box, ColorBase, 0)
+		c.drawControlFrame(id, box, ColorBase, 0)
 		if *state {
 			c.drawIcon(IconCheck, box, c.Style.Colors[ColorText])
 		}
@@ -213,7 +213,7 @@ func (c *Context) textBoxRaw(buf *string, id ID, opt Option) Res {
 		}
 
 		// draw
-		c.DrawControlFrame(id, r, ColorBase, opt)
+		c.drawControlFrame(id, r, ColorBase, opt)
 		if c.focus == id {
 			color := c.Style.Colors[ColorText]
 			textw := textWidth(*buf)
@@ -286,12 +286,12 @@ func (c *Context) SliderEx(value *float64, low, high, step float64, format strin
 		}
 
 		// draw base
-		c.DrawControlFrame(id, r, ColorBase, opt)
+		c.drawControlFrame(id, r, ColorBase, opt)
 		// draw thumb
 		w := c.Style.ThumbSize
 		x := int((v - low) * float64(r.Dx()-w) / (high - low))
 		thumb := image.Rect(r.Min.X+x, r.Min.Y, r.Min.X+x+w, r.Max.Y)
-		c.DrawControlFrame(id, thumb, ColorButton, opt)
+		c.drawControlFrame(id, thumb, ColorButton, opt)
 		// draw text
 		text := fmt.Sprintf(format, v)
 		c.DrawControlText(text, r, ColorText, opt)
@@ -322,7 +322,7 @@ func (c *Context) NumberEx(value *float64, step float64, format string, opt Opti
 		}
 
 		// draw base
-		c.DrawControlFrame(id, r, ColorBase, opt)
+		c.drawControlFrame(id, r, ColorBase, opt)
 		// draw text
 		text := fmt.Sprintf(format, *value)
 		c.DrawControlText(text, r, ColorText, opt)
@@ -373,7 +373,7 @@ func (c *Context) header(label string, istreenode bool, opt Option) Res {
 				c.drawFrame(r, ColorButtonHover)
 			}
 		} else {
-			c.DrawControlFrame(id, r, ColorButton, 0)
+			c.drawControlFrame(id, r, ColorButton, 0)
 		}
 		var icon Icon
 		if expanded {
