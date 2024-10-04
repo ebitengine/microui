@@ -138,16 +138,10 @@ func (c *Context) Label(text string) {
 	})
 }
 
-func (c *Context) ButtonEx(label string, icon Icon, opt Option) Res {
+func (c *Context) ButtonEx(label string, opt Option) Res {
 	var id ID
 	if len(label) > 0 {
 		id = c.id([]byte(label))
-	} else {
-		iconPtr := &icon
-		// TODO: investigate if this okay, if icon represents an icon ID we might need
-		// to refer to the value instead of a pointer, like commented below:
-		// unsafe.Slice((*byte)(unsafe.Pointer(&icon)), unsafe.Sizeof(icon)))
-		id = c.id(ptrToBytes(unsafe.Pointer(iconPtr)))
 	}
 	return c.Control(id, opt, func(r image.Rectangle) Res {
 		var res Res
@@ -159,9 +153,6 @@ func (c *Context) ButtonEx(label string, icon Icon, opt Option) Res {
 		c.drawControlFrame(id, r, ColorButton, opt)
 		if len(label) > 0 {
 			c.drawControlText(label, r, ColorText, opt)
-		}
-		if icon != 0 {
-			c.drawIcon(icon, r, c.Style.Colors[ColorText])
 		}
 		return res
 	})
@@ -181,7 +172,7 @@ func (c *Context) Checkbox(label string, state *bool) Res {
 		// draw
 		c.drawControlFrame(id, box, ColorBase, 0)
 		if *state {
-			c.drawIcon(IconCheck, box, c.Style.Colors[ColorText])
+			c.drawIcon(iconCheck, box, c.Style.Colors[ColorText])
 		}
 		r = image.Rect(r.Min.X+box.Dx(), r.Min.Y, r.Max.X, r.Max.Y)
 		c.drawControlText(label, r, ColorText, 0)
@@ -375,11 +366,11 @@ func (c *Context) header(label string, istreenode bool, opt Option) Res {
 		} else {
 			c.drawControlFrame(id, r, ColorButton, 0)
 		}
-		var icon Icon
+		var icon icon
 		if expanded {
-			icon = IconExpanded
+			icon = iconExpanded
 		} else {
-			icon = IconCollapsed
+			icon = iconCollapsed
 		}
 		c.drawIcon(
 			icon,
@@ -596,7 +587,7 @@ func (c *Context) WindowEx(title string, rect image.Rectangle, opt Option, f fun
 			id := c.id([]byte("!close"))
 			r := image.Rect(tr.Max.X-tr.Dy(), tr.Min.Y, tr.Max.X, tr.Max.Y)
 			tr.Max.X -= r.Dx()
-			c.drawIcon(IconClose, r, c.Style.Colors[ColorTitleText])
+			c.drawIcon(iconClose, r, c.Style.Colors[ColorTitleText])
 			c.updateControl(id, r, opt)
 			if c.mousePressed == mouseLeft && id == c.focus {
 				cnt.Open = false

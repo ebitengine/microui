@@ -33,11 +33,11 @@ func lineHeight() int {
 var (
 	//go:embed icon/*.png
 	iconFS  embed.FS
-	iconMap = map[Icon]*ebiten.Image{}
+	iconMap = map[icon]*ebiten.Image{}
 	iconM   sync.Mutex
 )
 
-func iconImage(icon Icon) *ebiten.Image {
+func iconImage(icon icon) *ebiten.Image {
 	iconM.Lock()
 	defer iconM.Unlock()
 
@@ -47,13 +47,13 @@ func iconImage(icon Icon) *ebiten.Image {
 
 	var name string
 	switch icon {
-	case IconCheck:
+	case iconCheck:
 		name = "check.png"
-	case IconClose:
+	case iconClose:
 		name = "close.png"
-	case IconCollapsed:
+	case iconCollapsed:
 		name = "collapsed.png"
-	case IconExpanded:
+	case iconExpanded:
 		name = "expanded.png"
 	default:
 		return nil

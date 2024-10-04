@@ -93,7 +93,7 @@ func (c *Context) drawText(str string, pos image.Point, color color.Color) {
 	}
 }
 
-func (c *Context) drawIcon(icon Icon, rect image.Rectangle, color color.Color) {
+func (c *Context) drawIcon(icon icon, rect image.Rectangle, color color.Color) {
 	// do clip command if the rect isn't fully contained within the cliprect
 	clipped := c.checkClip(rect)
 	if clipped == clipAll {

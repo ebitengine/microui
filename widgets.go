@@ -6,7 +6,7 @@ package microui
 import "image"
 
 func (c *Context) Button(label string) Res {
-	return c.ButtonEx(label, 0, OptAlignCenter)
+	return c.ButtonEx(label, OptAlignCenter)
 }
 
 func (c *Context) TextBox(buf *string) Res {
