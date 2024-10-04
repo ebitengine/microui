@@ -156,7 +156,7 @@ func (c *Context) container(id ID, opt Option) *Container {
 	cnt.HeadIdx = -1
 	cnt.TailIdx = -1
 	cnt.Open = true
-	c.BringToFront(cnt)
+	c.bringToFront(cnt)
 	return cnt
 }
 
@@ -165,7 +165,7 @@ func (c *Context) Container(name string) *Container {
 	return c.container(id, 0)
 }
 
-func (c *Context) BringToFront(cnt *Container) {
+func (c *Context) bringToFront(cnt *Container) {
 	c.lastZIndex++
 	cnt.ZIndex = c.lastZIndex
 }
@@ -217,7 +217,7 @@ func (c *Context) end() {
 	if c.mousePressed != 0 && c.nextHoverRoot != nil &&
 		c.nextHoverRoot.ZIndex < c.lastZIndex &&
 		c.nextHoverRoot.ZIndex >= 0 {
-		c.BringToFront(c.nextHoverRoot)
+		c.bringToFront(c.nextHoverRoot)
 	}
 
 	// reset input state

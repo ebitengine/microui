@@ -644,7 +644,7 @@ func (c *Context) OpenPopup(name string) {
 	// position at mouse cursor, open and bring-to-front
 	cnt.Rect = image.Rect(c.mousePos.X, c.mousePos.Y, c.mousePos.X+1, c.mousePos.Y+1)
 	cnt.Open = true
-	c.BringToFront(cnt)
+	c.bringToFront(cnt)
 }
 
 func (c *Context) Popup(name string, f func(res Res)) {
