@@ -92,7 +92,7 @@ func (c *Context) updateControl(id ID, rect image.Rectangle, opt Option) {
 	}
 }
 
-func (c *Context) Control(id ID, opt Option, f func(r image.Rectangle) Res) Res {
+func (c *Context) Control(id ID, opt Option, f func(r image.Rectangle) Response) Response {
 	r := c.layoutNext()
 	c.updateControl(id, r, opt)
 	return f(r)
@@ -104,7 +104,7 @@ func (c *Context) Text(text string) {
 		var endIdx, p int
 		c.SetLayoutRow([]int{-1}, lineHeight())
 		for endIdx < len(text) {
-			c.Control(0, 0, func(r image.Rectangle) Res {
+			c.Control(0, 0, func(r image.Rectangle) Response {
 				w := 0
 				endIdx = p
 				startIdx := endIdx
@@ -132,22 +132,22 @@ func (c *Context) Text(text string) {
 }
 
 func (c *Context) Label(text string) {
-	c.Control(0, 0, func(r image.Rectangle) Res {
+	c.Control(0, 0, func(r image.Rectangle) Response {
 		c.drawControlText(text, r, ColorText, 0)
 		return 0
 	})
 }
 
-func (c *Context) buttonEx(label string, opt Option) Res {
+func (c *Context) buttonEx(label string, opt Option) Response {
 	var id ID
 	if len(label) > 0 {
 		id = c.id([]byte(label))
 	}
-	return c.Control(id, opt, func(r image.Rectangle) Res {
-		var res Res
+	return c.Control(id, opt, func(r image.Rectangle) Response {
+		var res Response
 		// handle click
 		if c.mousePressed == mouseLeft && c.focus == id {
-			res |= ResSubmit
+			res |= ResponseSubmit
 		}
 		// draw
 		c.drawControlFrame(id, r, ColorButton, opt)
@@ -158,15 +158,15 @@ func (c *Context) buttonEx(label string, opt Option) Res {
 	})
 }
 
-func (c *Context) Checkbox(label string, state *bool) Res {
+func (c *Context) Checkbox(label string, state *bool) Response {
 	id := c.id(ptrToBytes(unsafe.Pointer(state)))
-	return c.Control(id, 0, func(r image.Rectangle) Res {
-		var res Res
+	return c.Control(id, 0, func(r image.Rectangle) Response {
+		var res Response
 		box := image.Rect(r.Min.X, r.Min.Y, r.Min.X+r.Dy(), r.Max.Y)
 		c.updateControl(id, r, 0)
 		// handle click
 		if c.mousePressed == mouseLeft && c.focus == id {
-			res |= ResChange
+			res |= ResponseChange
 			*state = !*state
 		}
 		// draw
@@ -180,26 +180,26 @@ func (c *Context) Checkbox(label string, state *bool) Res {
 	})
 }
 
-func (c *Context) textBoxRaw(buf *string, id ID, opt Option) Res {
-	return c.Control(id, opt|OptHoldFocus, func(r image.Rectangle) Res {
-		var res Res
+func (c *Context) textBoxRaw(buf *string, id ID, opt Option) Response {
+	return c.Control(id, opt|OptHoldFocus, func(r image.Rectangle) Response {
+		var res Response
 		buflen := len(*buf)
 
 		if c.focus == id {
 			// handle text input
 			if len(c.textInput) > 0 {
 				*buf += string(c.textInput)
-				res |= ResChange
+				res |= ResponseChange
 			}
 			// handle backspace
 			if (c.keyPressed&keyBackspace) != 0 && buflen > 0 {
 				*buf = (*buf)[:buflen-1]
-				res |= ResChange
+				res |= ResponseChange
 			}
 			// handle return
 			if (c.keyPressed & keyReturn) != 0 {
 				c.SetFocus(0)
-				res |= ResSubmit
+				res |= ResponseSubmit
 			}
 		}
 
@@ -231,7 +231,7 @@ func (c *Context) numberTextBox(value *float64, id ID) bool {
 	}
 	if c.numberEdit == id {
 		res := c.textBoxRaw(&c.numberEditBuf, id, 0)
-		if (res&ResSubmit) != 0 || c.focus != id {
+		if (res&ResponseSubmit) != 0 || c.focus != id {
 			nval, err := strconv.ParseFloat(c.numberEditBuf, 32)
 			if err != nil {
 				nval = 0
@@ -244,12 +244,12 @@ func (c *Context) numberTextBox(value *float64, id ID) bool {
 	return false
 }
 
-func (c *Context) textBoxEx(buf *string, opt Option) Res {
+func (c *Context) textBoxEx(buf *string, opt Option) Response {
 	id := c.id(ptrToBytes(unsafe.Pointer(buf)))
 	return c.textBoxRaw(buf, id, opt)
 }
 
-func (c *Context) SliderEx(value *float64, low, high, step float64, format string, opt Option) Res {
+func (c *Context) SliderEx(value *float64, low, high, step float64, format string, opt Option) Response {
 	last := *value
 	v := last
 	id := c.id(ptrToBytes(unsafe.Pointer(value)))
@@ -260,8 +260,8 @@ func (c *Context) SliderEx(value *float64, low, high, step float64, format strin
 	}
 
 	// handle normal mode
-	return c.Control(id, opt, func(r image.Rectangle) Res {
-		var res Res
+	return c.Control(id, opt, func(r image.Rectangle) Response {
+		var res Response
 		// handle input
 		if c.focus == id && (c.mouseDown|c.mousePressed) == mouseLeft {
 			v = low + float64(c.mousePos.X-r.Min.X)*(high-low)/float64(r.Dx())
@@ -273,7 +273,7 @@ func (c *Context) SliderEx(value *float64, low, high, step float64, format strin
 		*value = clampF(v, low, high)
 		v = *value
 		if last != v {
-			res |= ResChange
+			res |= ResponseChange
 		}
 
 		// draw base
@@ -291,7 +291,7 @@ func (c *Context) SliderEx(value *float64, low, high, step float64, format strin
 	})
 }
 
-func (c *Context) NumberEx(value *float64, step float64, format string, opt Option) Res {
+func (c *Context) NumberEx(value *float64, step float64, format string, opt Option) Response {
 	id := c.id(ptrToBytes(unsafe.Pointer(value)))
 	last := *value
 
@@ -301,15 +301,15 @@ func (c *Context) NumberEx(value *float64, step float64, format string, opt Opti
 	}
 
 	// handle normal mode
-	return c.Control(id, opt, func(r image.Rectangle) Res {
-		var res Res
+	return c.Control(id, opt, func(r image.Rectangle) Response {
+		var res Response
 		// handle input
 		if c.focus == id && c.mouseDown == mouseLeft {
 			*value += float64(c.mouseDelta.X) * step
 		}
 		// set flag if value changed
 		if *value != last {
-			res |= ResChange
+			res |= ResponseChange
 		}
 
 		// draw base
@@ -322,7 +322,7 @@ func (c *Context) NumberEx(value *float64, step float64, format string, opt Opti
 	})
 }
 
-func (c *Context) header(label string, istreenode bool, opt Option) Res {
+func (c *Context) header(label string, istreenode bool, opt Option) Response {
 	id := c.id([]byte(label))
 	idx := c.poolGet(c.treeNodePool[:], id)
 	c.SetLayoutRow([]int{-1}, 0)
@@ -335,7 +335,7 @@ func (c *Context) header(label string, istreenode bool, opt Option) Res {
 		expanded = active
 	}
 
-	return c.Control(id, 0, func(r image.Rectangle) Res {
+	return c.Control(id, 0, func(r image.Rectangle) Response {
 		// handle click (TODO (port): check if this is correct)
 		clicked := c.mousePressed == mouseLeft && c.focus == id
 		v1, v2 := 0, 0
@@ -381,19 +381,19 @@ func (c *Context) header(label string, istreenode bool, opt Option) Res {
 		c.drawControlText(label, r, ColorText, 0)
 
 		if expanded {
-			return ResActive
+			return ResponseActive
 		}
 		return 0
 	})
 }
 
-func (c *Context) HeaderEx(label string, opt Option) Res {
+func (c *Context) HeaderEx(label string, opt Option) Response {
 	return c.header(label, false, opt)
 }
 
-func (c *Context) treeNode(label string, opt Option, f func(res Res)) {
+func (c *Context) treeNode(label string, opt Option, f func(res Response)) {
 	res := c.header(label, true, opt)
-	if res&ResActive == 0 {
+	if res&ResponseActive == 0 {
 		return
 	}
 	c.layout().indent += c.Style.Indent
@@ -515,7 +515,7 @@ func (c *Context) pushContainerBody(cnt *Container, body image.Rectangle, opt Op
 	cnt.Body = body
 }
 
-func (c *Context) window(title string, rect image.Rectangle, opt Option, f func(res Res)) {
+func (c *Context) window(title string, rect image.Rectangle, opt Option, f func(res Response)) {
 	id := c.id([]byte(title))
 
 	cnt := c.container(id, opt)
@@ -624,7 +624,7 @@ func (c *Context) window(title string, rect image.Rectangle, opt Option, f func(
 	c.pushClipRect(cnt.Body)
 	defer c.popClipRect()
 
-	f(ResActive)
+	f(ResponseActive)
 }
 
 func (c *Context) OpenPopup(name string) {
@@ -638,7 +638,7 @@ func (c *Context) OpenPopup(name string) {
 	c.bringToFront(cnt)
 }
 
-func (c *Context) Popup(name string, f func(res Res)) {
+func (c *Context) Popup(name string, f func(res Response)) {
 	opt := OptPopup | OptAutoSize | OptNoResize | OptNoScroll | OptNoTitle | OptClosed
 	c.window(name, image.Rectangle{}, opt, f)
 }

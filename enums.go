@@ -44,12 +44,12 @@ const (
 	iconExpanded
 )
 
-type Res int
+type Response int
 
 const (
-	ResActive Res = (1 << 0)
-	ResSubmit Res = (1 << 1)
-	ResChange Res = (1 << 2)
+	ResponseActive Response = (1 << 0)
+	ResponseSubmit Response = (1 << 1)
+	ResponseChange Response = (1 << 2)
 )
 
 type Option int

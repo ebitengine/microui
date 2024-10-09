@@ -31,7 +31,7 @@ func (g *Game) writeLog(text string) {
 }
 
 func (g *Game) testWindow() {
-	g.ctx.Window("Demo Window", image.Rect(40, 40, 340, 490), func(res microui.Res) {
+	g.ctx.Window("Demo Window", image.Rect(40, 40, 340, 490), func(res microui.Response) {
 		win := g.ctx.CurrentContainer()
 		win.Rect.Max.X = win.Rect.Min.X + max(win.Rect.Dx(), 240)
 		win.Rect.Max.Y = win.Rect.Min.Y + max(win.Rect.Dy(), 300)
@@ -63,7 +63,7 @@ func (g *Game) testWindow() {
 			if g.ctx.Button("Popup") != 0 {
 				g.ctx.OpenPopup("Test Popup")
 			}
-			g.ctx.Popup("Test Popup", func(res microui.Res) {
+			g.ctx.Popup("Test Popup", func(res microui.Response) {
 				g.ctx.Button("Hello")
 				g.ctx.Button("World")
 			})
@@ -73,12 +73,12 @@ func (g *Game) testWindow() {
 		if g.ctx.HeaderEx("Tree and Text", microui.OptExpanded) != 0 {
 			g.ctx.SetLayoutRow([]int{140, -1}, 0)
 			g.ctx.LayoutColumn(func() {
-				g.ctx.TreeNode("Test 1", func(res microui.Res) {
-					g.ctx.TreeNode("Test 1a", func(res microui.Res) {
+				g.ctx.TreeNode("Test 1", func(res microui.Response) {
+					g.ctx.TreeNode("Test 1a", func(res microui.Response) {
 						g.ctx.Label("Hello")
 						g.ctx.Label("World")
 					})
-					g.ctx.TreeNode("Test 1b", func(res microui.Res) {
+					g.ctx.TreeNode("Test 1b", func(res microui.Response) {
 						if g.ctx.Button("Button 1") != 0 {
 							g.writeLog("Pressed button 1")
 						}
@@ -87,7 +87,7 @@ func (g *Game) testWindow() {
 						}
 					})
 				})
-				g.ctx.TreeNode("Test 2", func(res microui.Res) {
+				g.ctx.TreeNode("Test 2", func(res microui.Response) {
 					g.ctx.SetLayoutRow([]int{54, 54}, 0)
 					if g.ctx.Button("Button 3") != 0 {
 						g.writeLog("Pressed button 3")
@@ -102,7 +102,7 @@ func (g *Game) testWindow() {
 						g.writeLog("Pressed button 6")
 					}
 				})
-				g.ctx.TreeNode("Test 3", func(res microui.Res) {
+				g.ctx.TreeNode("Test 3", func(res microui.Response) {
 					g.ctx.Checkbox("Checkbox 1", &g.checks[0])
 					g.ctx.Checkbox("Checkbox 2", &g.checks[1])
 					g.ctx.Checkbox("Checkbox 3", &g.checks[2])
@@ -128,7 +128,7 @@ func (g *Game) testWindow() {
 				g.ctx.Slider(&g.bg[2], 0, 255)
 			})
 			// color preview
-			g.ctx.Control(0, 0, func(r image.Rectangle) microui.Res {
+			g.ctx.Control(0, 0, func(r image.Rectangle) microui.Response {
 				g.ctx.DrawControl(func(screen *ebiten.Image) {
 					vector.DrawFilledRect(
 						screen,
@@ -159,7 +159,7 @@ func (g *Game) testWindow() {
 }
 
 func (g *Game) logWindow() {
-	g.ctx.Window("Log Window", image.Rect(350, 40, 650, 240), func(res microui.Res) {
+	g.ctx.Window("Log Window", image.Rect(350, 40, 650, 240), func(res microui.Response) {
 		// output text panel
 		g.ctx.SetLayoutRow([]int{-1}, -25)
 		var panel *microui.Container
@@ -176,7 +176,7 @@ func (g *Game) logWindow() {
 		// input textbox + submit button
 		var submitted bool
 		g.ctx.SetLayoutRow([]int{-70, -1}, 0)
-		if g.ctx.TextBox(&g.logSubmitBuf)&microui.ResSubmit != 0 {
+		if g.ctx.TextBox(&g.logSubmitBuf)&microui.ResponseSubmit != 0 {
 			g.ctx.SetFocus(g.ctx.LastID)
 			submitted = true
 		}
@@ -190,7 +190,7 @@ func (g *Game) logWindow() {
 	})
 }
 
-func (g *Game) byteSlider(fvalue *float64, value *byte, low, high byte) microui.Res {
+func (g *Game) byteSlider(fvalue *float64, value *byte, low, high byte) microui.Response {
 	*fvalue = float64(*value)
 	res := g.ctx.SliderEx(fvalue, float64(low), float64(high), 0, "%.0f", microui.OptAlignCenter)
 	*value = byte(*fvalue)
@@ -223,7 +223,7 @@ var (
 )
 
 func (g *Game) styleWindow() {
-	g.ctx.Window("Style Editor", image.Rect(350, 250, 650, 490), func(res microui.Res) {
+	g.ctx.Window("Style Editor", image.Rect(350, 250, 650, 490), func(res microui.Response) {
 		sw := int(float64(g.ctx.CurrentContainer().Body.Dx()) * 0.14)
 		g.ctx.SetLayoutRow([]int{80, sw, sw, sw, sw, -1}, 0)
 		for _, c := range colors {
@@ -232,7 +232,7 @@ func (g *Game) styleWindow() {
 			g.byteSlider(&fcolors[c.ColorID].G, &g.ctx.Style.Colors[c.ColorID].G, 0, 255)
 			g.byteSlider(&fcolors[c.ColorID].B, &g.ctx.Style.Colors[c.ColorID].B, 0, 255)
 			g.byteSlider(&fcolors[c.ColorID].A, &g.ctx.Style.Colors[c.ColorID].A, 0, 255)
-			g.ctx.Control(0, 0, func(r image.Rectangle) microui.Res {
+			g.ctx.Control(0, 0, func(r image.Rectangle) microui.Response {
 				clr := g.ctx.Style.Colors[c.ColorID]
 				g.ctx.DrawControl(func(target *ebiten.Image) {
 					vector.DrawFilledRect(
