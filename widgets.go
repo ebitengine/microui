@@ -6,11 +6,11 @@ package microui
 import "image"
 
 func (c *Context) Button(label string) Res {
-	return c.ButtonEx(label, OptAlignCenter)
+	return c.buttonEx(label, OptAlignCenter)
 }
 
 func (c *Context) TextBox(buf *string) Res {
-	return c.TextBoxEx(buf, 0)
+	return c.textBoxEx(buf, 0)
 }
 
 func (c *Context) Slider(value *float64, lo, hi float64) Res {
@@ -22,17 +22,17 @@ func (c *Context) Number(value *float64, step float64) Res {
 }
 
 func (c *Context) Header(label string) Res {
-	return c.HeaderEx(label, 0)
+	return c.HeaderEx(label, OptExpanded)
 }
 
 func (c *Context) TreeNode(label string, f func(res Res)) {
-	c.TreeNodeEx(label, 0, f)
+	c.treeNode(label, 0, f)
 }
 
 func (c *Context) Window(title string, rect image.Rectangle, f func(res Res)) {
-	c.WindowEx(title, rect, 0, f)
+	c.window(title, rect, 0, f)
 }
 
 func (c *Context) Panel(name string, f func()) {
-	c.PanelEx(name, 0, f)
+	c.panel(name, 0, f)
 }

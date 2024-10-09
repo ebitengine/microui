@@ -138,7 +138,7 @@ func (c *Context) Label(text string) {
 	})
 }
 
-func (c *Context) ButtonEx(label string, opt Option) Res {
+func (c *Context) buttonEx(label string, opt Option) Res {
 	var id ID
 	if len(label) > 0 {
 		id = c.id([]byte(label))
@@ -244,7 +244,7 @@ func (c *Context) numberTextBox(value *float64, id ID) bool {
 	return false
 }
 
-func (c *Context) TextBoxEx(buf *string, opt Option) Res {
+func (c *Context) textBoxEx(buf *string, opt Option) Res {
 	id := c.id(ptrToBytes(unsafe.Pointer(buf)))
 	return c.textBoxRaw(buf, id, opt)
 }
@@ -391,7 +391,7 @@ func (c *Context) HeaderEx(label string, opt Option) Res {
 	return c.header(label, false, opt)
 }
 
-func (c *Context) TreeNodeEx(label string, opt Option, f func(res Res)) {
+func (c *Context) treeNode(label string, opt Option, f func(res Res)) {
 	res := c.header(label, true, opt)
 	if res&ResActive == 0 {
 		return
@@ -515,7 +515,7 @@ func (c *Context) pushContainerBody(cnt *Container, body image.Rectangle, opt Op
 	cnt.Body = body
 }
 
-func (c *Context) WindowEx(title string, rect image.Rectangle, opt Option, f func(res Res)) {
+func (c *Context) window(title string, rect image.Rectangle, opt Option, f func(res Res)) {
 	id := c.id([]byte(title))
 
 	cnt := c.container(id, opt)
@@ -640,10 +640,10 @@ func (c *Context) OpenPopup(name string) {
 
 func (c *Context) Popup(name string, f func(res Res)) {
 	opt := OptPopup | OptAutoSize | OptNoResize | OptNoScroll | OptNoTitle | OptClosed
-	c.WindowEx(name, image.Rectangle{}, opt, f)
+	c.window(name, image.Rectangle{}, opt, f)
 }
 
-func (c *Context) PanelEx(name string, opt Option, f func()) {
+func (c *Context) panel(name string, opt Option, f func()) {
 	id := c.pushID([]byte(name))
 	defer c.popID()
 
