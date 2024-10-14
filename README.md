@@ -1,12 +1,12 @@
-# Microui for Ebitengine
+# DebugUI for Ebitengine
 
 **The project is currently under development. The API is subject to frequent changes. Please do not use it in production.**
 
-A [Microui](https://github.com/rxi/microui) fork for Ebitengine. The original Microui was developed by [@rxi](https://github.com/rxi/microui). The original Go port was developed by [@zeozeozeo](https://github.com/zeozeozeo) and [@Zyko0](https://github.com/Zyko0).
+DebugUI is a UI toolkit especially for debugging. This is based on [Microui](https://github.com/rxi/microui). The original Microui was developed by [@rxi](https://github.com/rxi/microui). The original Go port was developed by [@zeozeozeo](https://github.com/zeozeozeo) and [@Zyko0](https://github.com/Zyko0).
 
 ## License
 
-Microui for Ebitengine is licensed under Apache license version 2.0. See [LICENSE](LICENSE) file.
+DebugUI for Ebitengine is licensed under Apache license version 2.0. See [LICENSE](LICENSE) file.
 
 ### Microui
 
