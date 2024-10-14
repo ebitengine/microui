@@ -20,9 +20,3 @@ func (c *Context) drawFrame(rect image.Rectangle, colorid int) {
 		c.drawBox(rect.Inset(-1), c.style.colors[ColorBorder])
 	}
 }
-
-func NewContext() *Context {
-	return &Context{
-		style: &defaultStyle,
-	}
-}

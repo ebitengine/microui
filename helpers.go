@@ -145,10 +145,10 @@ func (c *Context) SetFocus(id ID) {
 	c.keepFocus = true
 }
 
-func (c *Context) Update(f func()) {
+func (c *Context) update(f func(ctx *Context)) {
 	c.begin()
 	defer c.end()
-	f()
+	f(c)
 }
 
 func (c *Context) begin() {

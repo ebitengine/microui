@@ -100,7 +100,7 @@ func (c *Context) updateInput() {
 	}
 }
 
-func (c *Context) Draw(screen *ebiten.Image) {
+func (c *Context) draw(screen *ebiten.Image) {
 	target := screen
 	var cmd *command
 	for c.nextCommand(&cmd) {

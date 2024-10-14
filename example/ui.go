@@ -23,101 +23,101 @@ func (g *Game) writeLog(text string) {
 	g.logUpdated = true
 }
 
-func (g *Game) testWindow() {
-	g.ctx.Window("Demo Window", image.Rect(40, 40, 340, 490), func(res debugui.Response, layout debugui.Layout) {
+func (g *Game) testWindow(ctx *debugui.Context) {
+	ctx.Window("Demo Window", image.Rect(40, 40, 340, 490), func(res debugui.Response, layout debugui.Layout) {
 		// window info
-		if g.ctx.Header("Window Info", false) != 0 {
-			g.ctx.SetLayoutRow([]int{54, -1}, 0)
-			g.ctx.Label("Position:")
-			g.ctx.Label(fmt.Sprintf("%d, %d", layout.Rect.Min.X, layout.Rect.Min.Y))
-			g.ctx.Label("Size:")
-			g.ctx.Label(fmt.Sprintf("%d, %d", layout.Rect.Dx(), layout.Rect.Dy()))
+		if ctx.Header("Window Info", false) != 0 {
+			ctx.SetLayoutRow([]int{54, -1}, 0)
+			ctx.Label("Position:")
+			ctx.Label(fmt.Sprintf("%d, %d", layout.Rect.Min.X, layout.Rect.Min.Y))
+			ctx.Label("Size:")
+			ctx.Label(fmt.Sprintf("%d, %d", layout.Rect.Dx(), layout.Rect.Dy()))
 		}
 
 		// labels + buttons
-		if g.ctx.Header("Test Buttons", true) != 0 {
-			g.ctx.SetLayoutRow([]int{100, -110, -1}, 0)
-			g.ctx.Label("Test buttons 1:")
-			if g.ctx.Button("Button 1") != 0 {
+		if ctx.Header("Test Buttons", true) != 0 {
+			ctx.SetLayoutRow([]int{100, -110, -1}, 0)
+			ctx.Label("Test buttons 1:")
+			if ctx.Button("Button 1") != 0 {
 				g.writeLog("Pressed button 1")
 			}
-			if g.ctx.Button("Button 2") != 0 {
+			if ctx.Button("Button 2") != 0 {
 				g.writeLog("Pressed button 2")
 			}
-			g.ctx.Label("Test buttons 2:")
-			if g.ctx.Button("Button 3") != 0 {
+			ctx.Label("Test buttons 2:")
+			if ctx.Button("Button 3") != 0 {
 				g.writeLog("Pressed button 3")
 			}
-			if g.ctx.Button("Popup") != 0 {
-				g.ctx.OpenPopup("Test Popup")
+			if ctx.Button("Popup") != 0 {
+				ctx.OpenPopup("Test Popup")
 			}
-			g.ctx.Popup("Test Popup", func(res debugui.Response, layout debugui.Layout) {
-				g.ctx.Button("Hello")
-				g.ctx.Button("World")
+			ctx.Popup("Test Popup", func(res debugui.Response, layout debugui.Layout) {
+				ctx.Button("Hello")
+				ctx.Button("World")
 			})
 		}
 
 		// tree
-		if g.ctx.Header("Tree and Text", true) != 0 {
-			g.ctx.SetLayoutRow([]int{140, -1}, 0)
-			g.ctx.LayoutColumn(func() {
-				g.ctx.TreeNode("Test 1", func(res debugui.Response) {
-					g.ctx.TreeNode("Test 1a", func(res debugui.Response) {
-						g.ctx.Label("Hello")
-						g.ctx.Label("World")
+		if ctx.Header("Tree and Text", true) != 0 {
+			ctx.SetLayoutRow([]int{140, -1}, 0)
+			ctx.LayoutColumn(func() {
+				ctx.TreeNode("Test 1", func(res debugui.Response) {
+					ctx.TreeNode("Test 1a", func(res debugui.Response) {
+						ctx.Label("Hello")
+						ctx.Label("World")
 					})
-					g.ctx.TreeNode("Test 1b", func(res debugui.Response) {
-						if g.ctx.Button("Button 1") != 0 {
+					ctx.TreeNode("Test 1b", func(res debugui.Response) {
+						if ctx.Button("Button 1") != 0 {
 							g.writeLog("Pressed button 1")
 						}
-						if g.ctx.Button("Button 2") != 0 {
+						if ctx.Button("Button 2") != 0 {
 							g.writeLog("Pressed button 2")
 						}
 					})
 				})
-				g.ctx.TreeNode("Test 2", func(res debugui.Response) {
-					g.ctx.SetLayoutRow([]int{54, 54}, 0)
-					if g.ctx.Button("Button 3") != 0 {
+				ctx.TreeNode("Test 2", func(res debugui.Response) {
+					ctx.SetLayoutRow([]int{54, 54}, 0)
+					if ctx.Button("Button 3") != 0 {
 						g.writeLog("Pressed button 3")
 					}
-					if g.ctx.Button("Button 4") != 0 {
+					if ctx.Button("Button 4") != 0 {
 						g.writeLog("Pressed button 4")
 					}
-					if g.ctx.Button("Button 5") != 0 {
+					if ctx.Button("Button 5") != 0 {
 						g.writeLog("Pressed button 5")
 					}
-					if g.ctx.Button("Button 6") != 0 {
+					if ctx.Button("Button 6") != 0 {
 						g.writeLog("Pressed button 6")
 					}
 				})
-				g.ctx.TreeNode("Test 3", func(res debugui.Response) {
-					g.ctx.Checkbox("Checkbox 1", &g.checks[0])
-					g.ctx.Checkbox("Checkbox 2", &g.checks[1])
-					g.ctx.Checkbox("Checkbox 3", &g.checks[2])
+				ctx.TreeNode("Test 3", func(res debugui.Response) {
+					ctx.Checkbox("Checkbox 1", &g.checks[0])
+					ctx.Checkbox("Checkbox 2", &g.checks[1])
+					ctx.Checkbox("Checkbox 3", &g.checks[2])
 				})
 			})
 
-			g.ctx.Text("Lorem ipsum dolor sit amet, consectetur adipiscing " +
+			ctx.Text("Lorem ipsum dolor sit amet, consectetur adipiscing " +
 				"elit. Maecenas lacinia, sem eu lacinia molestie, mi risus faucibus " +
 				"ipsum, eu varius magna felis a nulla.")
 		}
 
 		// background color sliders
-		if g.ctx.Header("Background Color", true) != 0 {
-			g.ctx.SetLayoutRow([]int{-78, -1}, 74)
+		if ctx.Header("Background Color", true) != 0 {
+			ctx.SetLayoutRow([]int{-78, -1}, 74)
 			// sliders
-			g.ctx.LayoutColumn(func() {
-				g.ctx.SetLayoutRow([]int{46, -1}, 0)
-				g.ctx.Label("Red:")
-				g.ctx.Slider(&g.bg[0], 0, 255, 1, 0)
-				g.ctx.Label("Green:")
-				g.ctx.Slider(&g.bg[1], 0, 255, 1, 0)
-				g.ctx.Label("Blue:")
-				g.ctx.Slider(&g.bg[2], 0, 255, 1, 0)
+			ctx.LayoutColumn(func() {
+				ctx.SetLayoutRow([]int{46, -1}, 0)
+				ctx.Label("Red:")
+				ctx.Slider(&g.bg[0], 0, 255, 1, 0)
+				ctx.Label("Green:")
+				ctx.Slider(&g.bg[1], 0, 255, 1, 0)
+				ctx.Label("Blue:")
+				ctx.Slider(&g.bg[2], 0, 255, 1, 0)
 			})
 			// color preview
-			g.ctx.Control(0, 0, func(r image.Rectangle) debugui.Response {
-				g.ctx.DrawControl(func(screen *ebiten.Image) {
+			ctx.Control(0, 0, func(r image.Rectangle) debugui.Response {
+				ctx.Draw(func(screen *ebiten.Image) {
 					vector.DrawFilledRect(
 						screen,
 						float32(r.Min.X),
@@ -138,35 +138,35 @@ func (g *Game) testWindow() {
 		}
 
 		// Number
-		if g.ctx.Header("Number", true) != 0 {
-			g.ctx.SetLayoutRow([]int{-1}, 0)
-			g.ctx.Number(&g.num1, 0.1, 2)
-			g.ctx.Slider(&g.num2, 0, 10, 0.1, 2)
+		if ctx.Header("Number", true) != 0 {
+			ctx.SetLayoutRow([]int{-1}, 0)
+			ctx.Number(&g.num1, 0.1, 2)
+			ctx.Slider(&g.num2, 0, 10, 0.1, 2)
 		}
 	})
 }
 
-func (g *Game) logWindow() {
-	g.ctx.Window("Log Window", image.Rect(350, 40, 650, 490), func(res debugui.Response, layout debugui.Layout) {
+func (g *Game) logWindow(ctx *debugui.Context) {
+	ctx.Window("Log Window", image.Rect(350, 40, 650, 490), func(res debugui.Response, layout debugui.Layout) {
 		// output text panel
-		g.ctx.SetLayoutRow([]int{-1}, -25)
-		g.ctx.Panel("Log Output", func(layout debugui.Layout) {
-			g.ctx.SetLayoutRow([]int{-1}, -1)
-			g.ctx.Text(g.logBuf)
+		ctx.SetLayoutRow([]int{-1}, -25)
+		ctx.Panel("Log Output", func(layout debugui.Layout) {
+			ctx.SetLayoutRow([]int{-1}, -1)
+			ctx.Text(g.logBuf)
 			if g.logUpdated {
-				g.ctx.SetScroll(image.Pt(layout.Scroll.X, layout.ContentSize.Y))
+				ctx.SetScroll(image.Pt(layout.Scroll.X, layout.ContentSize.Y))
 				g.logUpdated = false
 			}
 		})
 
 		// input textbox + submit button
 		var submitted bool
-		g.ctx.SetLayoutRow([]int{-70, -1}, 0)
-		if g.ctx.TextBox(&g.logSubmitBuf)&debugui.ResponseSubmit != 0 {
-			g.ctx.SetFocus(g.ctx.LastID)
+		ctx.SetLayoutRow([]int{-70, -1}, 0)
+		if ctx.TextBox(&g.logSubmitBuf)&debugui.ResponseSubmit != 0 {
+			ctx.SetFocus(ctx.LastID)
 			submitted = true
 		}
-		if g.ctx.Button("Submit") != 0 {
+		if ctx.Button("Submit") != 0 {
 			submitted = true
 		}
 		if submitted {

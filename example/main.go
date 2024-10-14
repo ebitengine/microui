@@ -12,7 +12,7 @@ import (
 )
 
 type Game struct {
-	ctx *debugui.Context
+	debugUI *debugui.DebugUI
 
 	logBuf       string
 	logSubmitBuf string
@@ -25,9 +25,9 @@ type Game struct {
 
 func New() *Game {
 	return &Game{
-		ctx:    debugui.NewContext(),
-		bg:     [3]float64{90, 95, 100},
-		checks: [3]bool{true, false, true},
+		debugUI: debugui.New(),
+		bg:      [3]float64{90, 95, 100},
+		checks:  [3]bool{true, false, true},
 	}
 }
 
@@ -35,15 +35,15 @@ func (g *Game) Update() error {
 	if ebiten.IsKeyPressed(ebiten.KeyEscape) {
 		return ebiten.Termination
 	}
-	g.ctx.Update(func() {
-		g.testWindow()
-		g.logWindow()
+	g.debugUI.Update(func(ctx *debugui.Context) {
+		g.testWindow(ctx)
+		g.logWindow(ctx)
 	})
 	return nil
 }
 
 func (g *Game) Draw(screen *ebiten.Image) {
-	g.ctx.Draw(screen)
+	g.debugUI.Draw(screen)
 }
 
 func (g *Game) Layout(outsideWidth, outsideHeight int) (int, int) {
