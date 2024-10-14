@@ -18,7 +18,7 @@ func (c *Context) inHoverRoot() bool {
 		}
 		// only root containers have their `head` field set; stop searching if we've
 		// reached the current root container
-		if c.containerStack[i].HeadIdx >= 0 {
+		if c.containerStack[i].headIdx >= 0 {
 			break
 		}
 	}
@@ -519,7 +519,7 @@ func (c *Context) window(title string, rect image.Rectangle, opt Option, f func(
 	id := c.id([]byte(title))
 
 	cnt := c.container(id, opt)
-	if cnt == nil || !cnt.Open {
+	if cnt == nil || !cnt.open {
 		return
 	}
 	c.idStack = append(c.idStack, id)
@@ -536,18 +536,18 @@ func (c *Context) window(title string, rect image.Rectangle, opt Option, f func(
 
 	// push container to roots list and push head command
 	c.rootList = append(c.rootList, cnt)
-	cnt.HeadIdx = c.pushJump(-1)
+	cnt.headIdx = c.pushJump(-1)
 	defer func() {
 		// push tail 'goto' jump command and set head 'skip' command. the final steps
 		// on initing these are done in End
 		cnt := c.CurrentContainer()
-		cnt.TailIdx = c.pushJump(-1)
-		c.commandList[cnt.HeadIdx].jump.dstIdx = len(c.commandList) //- 1
+		cnt.tailIdx = c.pushJump(-1)
+		c.commandList[cnt.headIdx].jump.dstIdx = len(c.commandList) //- 1
 	}()
 
 	// set as hover root if the mouse is overlapping this container and it has a
 	// higher zindex than the current hover root
-	if c.mousePos.In(cnt.Rect) && (c.nextHoverRoot == nil || cnt.ZIndex > c.nextHoverRoot.ZIndex) {
+	if c.mousePos.In(cnt.Rect) && (c.nextHoverRoot == nil || cnt.zIndex > c.nextHoverRoot.zIndex) {
 		c.nextHoverRoot = cnt
 	}
 
@@ -590,7 +590,7 @@ func (c *Context) window(title string, rect image.Rectangle, opt Option, f func(
 			c.drawIcon(iconClose, r, c.Style.Colors[ColorTitleText])
 			c.updateControl(id, r, opt)
 			if c.mousePressed == mouseLeft && id == c.focus {
-				cnt.Open = false
+				cnt.open = false
 			}
 		}
 	}
@@ -618,7 +618,7 @@ func (c *Context) window(title string, rect image.Rectangle, opt Option, f func(
 
 	// close if this is a popup window and elsewhere was clicked
 	if (opt&OptPopup) != 0 && c.mousePressed != 0 && c.hoverRoot != cnt {
-		cnt.Open = false
+		cnt.open = false
 	}
 
 	c.pushClipRect(cnt.Body)
@@ -634,7 +634,7 @@ func (c *Context) OpenPopup(name string) {
 	c.hoverRoot = c.nextHoverRoot
 	// position at mouse cursor, open and bring-to-front
 	cnt.Rect = image.Rect(c.mousePos.X, c.mousePos.Y, c.mousePos.X+1, c.mousePos.Y+1)
-	cnt.Open = true
+	cnt.open = true
 	c.bringToFront(cnt)
 }
 

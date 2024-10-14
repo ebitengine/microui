@@ -74,14 +74,14 @@ type command struct {
 }
 
 type Container struct {
-	HeadIdx     int
-	TailIdx     int
+	headIdx     int
+	tailIdx     int
 	Rect        image.Rectangle
 	Body        image.Rectangle
 	ContentSize image.Point
 	Scroll      image.Point
-	ZIndex      int
-	Open        bool
+	zIndex      int
+	open        bool
 }
 
 type Style struct {

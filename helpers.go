@@ -139,7 +139,7 @@ func (c *Context) CurrentContainer() *Container {
 func (c *Context) container(id ID, opt Option) *Container {
 	// try to get existing container from pool
 	if idx := c.poolGet(c.containerPool[:], id); idx >= 0 {
-		if c.containers[idx].Open || (^opt&OptClosed) != 0 {
+		if c.containers[idx].open || (^opt&OptClosed) != 0 {
 			c.poolUpdate(c.containerPool[:], idx)
 		}
 		return &c.containers[idx]
@@ -153,9 +153,9 @@ func (c *Context) container(id ID, opt Option) *Container {
 	idx := c.poolInit(c.containerPool[:], id)
 	cnt := &c.containers[idx]
 	*cnt = Container{}
-	cnt.HeadIdx = -1
-	cnt.TailIdx = -1
-	cnt.Open = true
+	cnt.headIdx = -1
+	cnt.tailIdx = -1
+	cnt.open = true
 	c.bringToFront(cnt)
 	return cnt
 }
@@ -167,7 +167,7 @@ func (c *Context) Container(name string) *Container {
 
 func (c *Context) bringToFront(cnt *Container) {
 	c.lastZIndex++
-	cnt.ZIndex = c.lastZIndex
+	cnt.zIndex = c.lastZIndex
 }
 
 func (c *Context) SetFocus(id ID) {
@@ -215,8 +215,8 @@ func (c *Context) end() {
 
 	// bring hover root to front if mouse was pressed
 	if c.mousePressed != 0 && c.nextHoverRoot != nil &&
-		c.nextHoverRoot.ZIndex < c.lastZIndex &&
-		c.nextHoverRoot.ZIndex >= 0 {
+		c.nextHoverRoot.zIndex < c.lastZIndex &&
+		c.nextHoverRoot.zIndex >= 0 {
 		c.bringToFront(c.nextHoverRoot)
 	}
 
@@ -229,7 +229,7 @@ func (c *Context) end() {
 
 	// sort root containers by zindex
 	sort.SliceStable(c.rootList, func(i, j int) bool {
-		return c.rootList[i].ZIndex < c.rootList[j].ZIndex
+		return c.rootList[i].zIndex < c.rootList[j].zIndex
 	})
 
 	// set root container jump commands
@@ -240,15 +240,15 @@ func (c *Context) end() {
 		if i == 0 {
 			cmd := c.commandList[0]
 			expect(cmd.typ == commandJump)
-			cmd.jump.dstIdx = cnt.HeadIdx + 1
+			cmd.jump.dstIdx = cnt.headIdx + 1
 			expect(cmd.jump.dstIdx < commandListSize)
 		} else {
 			prev := c.rootList[i-1]
-			c.commandList[prev.TailIdx].jump.dstIdx = cnt.HeadIdx + 1
+			c.commandList[prev.tailIdx].jump.dstIdx = cnt.headIdx + 1
 		}
 		// make the last container's tail jump to the end of command list
 		if i == len(c.rootList)-1 {
-			c.commandList[cnt.TailIdx].jump.dstIdx = len(c.commandList)
+			c.commandList[cnt.tailIdx].jump.dstIdx = len(c.commandList)
 		}
 	}
 }
