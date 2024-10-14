@@ -15,13 +15,6 @@ import (
 	"github.com/ebitengine/microui"
 )
 
-func max(a, b int) int {
-	if a > b {
-		return a
-	}
-	return b
-}
-
 func (g *Game) writeLog(text string) {
 	if len(g.logBuf) > 0 {
 		g.logBuf += "\n"
