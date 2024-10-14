@@ -15,40 +15,12 @@ func expect(x bool) {
 	}
 }
 
-func min(a, b int) int {
-	if a < b {
-		return a
-	}
-	return b
-}
-
-func max(a, b int) int {
-	if a > b {
-		return a
-	}
-	return b
-}
-
-func minF(a, b float64) float64 {
-	if a < b {
-		return a
-	}
-	return b
-}
-
-func maxF(a, b float64) float64 {
-	if a > b {
-		return a
-	}
-	return b
-}
-
 func clamp(x, a, b int) int {
 	return min(b, max(a, x))
 }
 
 func clampF(x, a, b float64) float64 {
-	return minF(b, maxF(a, x))
+	return min(b, max(a, x))
 }
 
 func fnv1a(init ID, data []byte) ID {
