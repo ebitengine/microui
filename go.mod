@@ -1,4 +1,4 @@
-module github.com/ebitengine/microui
+module github.com/ebitengine/debugui
 
 go 1.22.0
 
