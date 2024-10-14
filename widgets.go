@@ -13,12 +13,12 @@ func (c *Context) TextBox(buf *string) Response {
 	return c.textBoxEx(buf, 0)
 }
 
-func (c *Context) Slider(value *float64, lo, hi float64, step float64) Response {
-	return c.SliderEx(value, lo, hi, step, sliderFmt, OptAlignCenter)
+func (c *Context) Slider(value *float64, lo, hi float64, step float64, digits int) Response {
+	return c.sliderEx(value, lo, hi, step, digits, OptAlignCenter)
 }
 
-func (c *Context) Number(value *float64, step float64) Response {
-	return c.NumberEx(value, step, sliderFmt, OptAlignCenter)
+func (c *Context) Number(value *float64, step float64, digits int) Response {
+	return c.numberEx(value, step, digits, OptAlignCenter)
 }
 
 func (c *Context) Header(label string) Response {

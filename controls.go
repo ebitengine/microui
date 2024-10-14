@@ -249,7 +249,11 @@ func (c *Context) textBoxEx(buf *string, opt Option) Response {
 	return c.textBoxRaw(buf, id, opt)
 }
 
-func (c *Context) SliderEx(value *float64, low, high, step float64, format string, opt Option) Response {
+func formatNumber(v float64, digits int) string {
+	return fmt.Sprintf("%."+strconv.Itoa(digits)+"f", v)
+}
+
+func (c *Context) sliderEx(value *float64, low, high, step float64, digits int, opt Option) Response {
 	last := *value
 	v := last
 	id := c.id(ptrToBytes(unsafe.Pointer(value)))
@@ -284,14 +288,14 @@ func (c *Context) SliderEx(value *float64, low, high, step float64, format strin
 		thumb := image.Rect(r.Min.X+x, r.Min.Y, r.Min.X+x+w, r.Max.Y)
 		c.drawControlFrame(id, thumb, ColorButton, opt)
 		// draw text
-		text := fmt.Sprintf(format, v)
+		text := formatNumber(v, digits)
 		c.drawControlText(text, r, ColorText, opt)
 
 		return res
 	})
 }
 
-func (c *Context) NumberEx(value *float64, step float64, format string, opt Option) Response {
+func (c *Context) numberEx(value *float64, step float64, digits int, opt Option) Response {
 	id := c.id(ptrToBytes(unsafe.Pointer(value)))
 	last := *value
 
@@ -315,7 +319,7 @@ func (c *Context) NumberEx(value *float64, step float64, format string, opt Opti
 		// draw base
 		c.drawControlFrame(id, r, ColorBase, opt)
 		// draw text
-		text := fmt.Sprintf(format, *value)
+		text := formatNumber(*value, digits)
 		c.drawControlText(text, r, ColorText, opt)
 
 		return res

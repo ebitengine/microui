@@ -109,11 +109,11 @@ func (g *Game) testWindow() {
 			g.ctx.LayoutColumn(func() {
 				g.ctx.SetLayoutRow([]int{46, -1}, 0)
 				g.ctx.Label("Red:")
-				g.ctx.Slider(&g.bg[0], 0, 255, 0)
+				g.ctx.Slider(&g.bg[0], 0, 255, 1, 0)
 				g.ctx.Label("Green:")
-				g.ctx.Slider(&g.bg[1], 0, 255, 0)
+				g.ctx.Slider(&g.bg[1], 0, 255, 1, 0)
 				g.ctx.Label("Blue:")
-				g.ctx.Slider(&g.bg[2], 0, 255, 0)
+				g.ctx.Slider(&g.bg[2], 0, 255, 1, 0)
 			})
 			// color preview
 			g.ctx.Control(0, 0, func(r image.Rectangle) microui.Response {
@@ -140,8 +140,8 @@ func (g *Game) testWindow() {
 		// Number
 		if g.ctx.HeaderEx("Number", microui.OptExpanded) != 0 {
 			g.ctx.SetLayoutRow([]int{-1}, 0)
-			g.ctx.Number(&g.num1, 0.1)
-			g.ctx.SliderEx(&g.num2, 0, 10, 0.1, "%.2f", microui.OptAlignCenter)
+			g.ctx.Number(&g.num1, 0.1, 2)
+			g.ctx.Slider(&g.num2, 0, 10, 0.1, 2)
 		}
 	})
 }
