@@ -515,7 +515,7 @@ func (c *Context) pushContainerBody(cnt *Container, body image.Rectangle, opt Op
 	cnt.Body = body
 }
 
-func (c *Context) window(title string, rect image.Rectangle, opt Option, f func(res Response)) {
+func (c *Context) window(title string, rect image.Rectangle, opt Option, f func(res Response, layout Layout)) {
 	id := c.id([]byte(title))
 
 	cnt := c.container(id, opt)
@@ -624,7 +624,7 @@ func (c *Context) window(title string, rect image.Rectangle, opt Option, f func(
 	c.pushClipRect(cnt.Body)
 	defer c.popClipRect()
 
-	f(ResponseActive)
+	f(ResponseActive, c.CurrentContainer().Layout)
 }
 
 func (c *Context) OpenPopup(name string) {
@@ -638,12 +638,12 @@ func (c *Context) OpenPopup(name string) {
 	c.bringToFront(cnt)
 }
 
-func (c *Context) Popup(name string, f func(res Response)) {
+func (c *Context) Popup(name string, f func(res Response, layout Layout)) {
 	opt := OptPopup | OptAutoSize | OptNoResize | OptNoScroll | OptNoTitle | OptClosed
 	c.window(name, image.Rectangle{}, opt, f)
 }
 
-func (c *Context) panel(name string, opt Option, f func()) {
+func (c *Context) panel(name string, opt Option, f func(layout Layout)) {
 	id := c.pushID([]byte(name))
 	defer c.popID()
 
@@ -660,5 +660,5 @@ func (c *Context) panel(name string, opt Option, f func()) {
 	c.pushClipRect(cnt.Body)
 	defer c.popClipRect()
 
-	f()
+	f(c.CurrentContainer().Layout)
 }

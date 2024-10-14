@@ -24,19 +24,14 @@ func (g *Game) writeLog(text string) {
 }
 
 func (g *Game) testWindow() {
-	g.ctx.Window("Demo Window", image.Rect(40, 40, 340, 490), func(res microui.Response) {
-		win := g.ctx.CurrentContainer()
-		win.Rect.Max.X = win.Rect.Min.X + max(win.Rect.Dx(), 240)
-		win.Rect.Max.Y = win.Rect.Min.Y + max(win.Rect.Dy(), 300)
-
+	g.ctx.Window("Demo Window", image.Rect(40, 40, 340, 490), func(res microui.Response, layout microui.Layout) {
 		// window info
 		if g.ctx.Header("Window Info") != 0 {
-			win := g.ctx.CurrentContainer()
 			g.ctx.SetLayoutRow([]int{54, -1}, 0)
 			g.ctx.Label("Position:")
-			g.ctx.Label(fmt.Sprintf("%d, %d", win.Rect.Min.X, win.Rect.Min.Y))
+			g.ctx.Label(fmt.Sprintf("%d, %d", layout.Rect.Min.X, layout.Rect.Min.Y))
 			g.ctx.Label("Size:")
-			g.ctx.Label(fmt.Sprintf("%d, %d", win.Rect.Dx(), win.Rect.Dy()))
+			g.ctx.Label(fmt.Sprintf("%d, %d", layout.Rect.Dx(), layout.Rect.Dy()))
 		}
 
 		// labels + buttons
@@ -56,7 +51,7 @@ func (g *Game) testWindow() {
 			if g.ctx.Button("Popup") != 0 {
 				g.ctx.OpenPopup("Test Popup")
 			}
-			g.ctx.Popup("Test Popup", func(res microui.Response) {
+			g.ctx.Popup("Test Popup", func(res microui.Response, layout microui.Layout) {
 				g.ctx.Button("Hello")
 				g.ctx.Button("World")
 			})
@@ -152,11 +147,11 @@ func (g *Game) testWindow() {
 }
 
 func (g *Game) logWindow() {
-	g.ctx.Window("Log Window", image.Rect(350, 40, 650, 240), func(res microui.Response) {
+	g.ctx.Window("Log Window", image.Rect(350, 40, 650, 240), func(res microui.Response, layout microui.Layout) {
 		// output text panel
 		g.ctx.SetLayoutRow([]int{-1}, -25)
 		var panel *microui.Container
-		g.ctx.Panel("Log Output", func() {
+		g.ctx.Panel("Log Output", func(layout microui.Layout) {
 			panel = g.ctx.CurrentContainer()
 			g.ctx.SetLayoutRow([]int{-1}, -1)
 			g.ctx.Text(g.logBuf)
@@ -216,8 +211,8 @@ var (
 )
 
 func (g *Game) styleWindow() {
-	g.ctx.Window("Style Editor", image.Rect(350, 250, 650, 490), func(res microui.Response) {
-		sw := int(float64(g.ctx.CurrentContainer().Body.Dx()) * 0.14)
+	g.ctx.Window("Style Editor", image.Rect(350, 250, 650, 490), func(res microui.Response, layout microui.Layout) {
+		sw := int(float64(layout.Body.Dx()) * 0.14)
 		g.ctx.SetLayoutRow([]int{80, sw, sw, sw, sw, -1}, 0)
 		for _, c := range colors {
 			g.ctx.Label(c.Label)

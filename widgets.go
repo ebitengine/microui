@@ -29,10 +29,10 @@ func (c *Context) TreeNode(label string, f func(res Response)) {
 	c.treeNode(label, 0, f)
 }
 
-func (c *Context) Window(title string, rect image.Rectangle, f func(res Response)) {
+func (c *Context) Window(title string, rect image.Rectangle, f func(res Response, layout Layout)) {
 	c.window(title, rect, 0, f)
 }
 
-func (c *Context) Panel(name string, f func()) {
+func (c *Context) Panel(name string, f func(layout Layout)) {
 	c.panel(name, 0, f)
 }
