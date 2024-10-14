@@ -12,7 +12,6 @@ func (c *Context) poolInit(items []poolItem, id ID) int {
 			n = i
 		}
 	}
-	expect(n > -1)
 	items[n].id = id
 	c.poolUpdate(items, n)
 	return n

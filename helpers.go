@@ -9,12 +9,6 @@ import (
 	"unsafe"
 )
 
-func expect(x bool) {
-	if !x {
-		panic("expect() failed")
-	}
-}
-
 func clamp(x, a, b int) int {
 	return min(b, max(a, x))
 }
@@ -172,10 +166,18 @@ func (c *Context) begin() {
 
 func (c *Context) end() {
 	// check stacks
-	expect(len(c.containerStack) == 0)
-	expect(len(c.clipStack) == 0)
-	expect(len(c.idStack) == 0)
-	expect(len(c.layoutStack) == 0)
+	if len(c.containerStack) > 0 {
+		panic("container stack not empty")
+	}
+	if len(c.clipStack) > 0 {
+		panic("clip stack not empty")
+	}
+	if len(c.idStack) > 0 {
+		panic("id stack not empty")
+	}
+	if len(c.layoutStack) > 0 {
+		panic("layout stack not empty")
+	}
 
 	// handle scroll input
 	if c.scrollTarget != nil {
@@ -215,9 +217,13 @@ func (c *Context) end() {
 		// otherwise set the previous container's tail to jump to this one
 		if i == 0 {
 			cmd := c.commandList[0]
-			expect(cmd.typ == commandJump)
+			if cmd.typ != commandJump {
+				panic("expected jump command")
+			}
 			cmd.jump.dstIdx = cnt.headIdx + 1
-			expect(cmd.jump.dstIdx < commandListSize)
+			if cnt.headIdx >= len(c.commandList) {
+				panic("invalid head index")
+			}
 		} else {
 			prev := c.rootList[i-1]
 			c.commandList[prev.tailIdx].jump.dstIdx = cnt.headIdx + 1
