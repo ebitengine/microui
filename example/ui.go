@@ -12,7 +12,7 @@ import (
 	"github.com/hajimehoshi/ebiten/v2/text/v2"
 	"github.com/hajimehoshi/ebiten/v2/vector"
 
-	"github.com/ebitengine/microui"
+	"github.com/ebitengine/debugui"
 )
 
 func (g *Game) writeLog(text string) {
@@ -24,7 +24,7 @@ func (g *Game) writeLog(text string) {
 }
 
 func (g *Game) testWindow() {
-	g.ctx.Window("Demo Window", image.Rect(40, 40, 340, 490), func(res microui.Response, layout microui.Layout) {
+	g.ctx.Window("Demo Window", image.Rect(40, 40, 340, 490), func(res debugui.Response, layout debugui.Layout) {
 		// window info
 		if g.ctx.Header("Window Info", false) != 0 {
 			g.ctx.SetLayoutRow([]int{54, -1}, 0)
@@ -51,7 +51,7 @@ func (g *Game) testWindow() {
 			if g.ctx.Button("Popup") != 0 {
 				g.ctx.OpenPopup("Test Popup")
 			}
-			g.ctx.Popup("Test Popup", func(res microui.Response, layout microui.Layout) {
+			g.ctx.Popup("Test Popup", func(res debugui.Response, layout debugui.Layout) {
 				g.ctx.Button("Hello")
 				g.ctx.Button("World")
 			})
@@ -61,12 +61,12 @@ func (g *Game) testWindow() {
 		if g.ctx.Header("Tree and Text", true) != 0 {
 			g.ctx.SetLayoutRow([]int{140, -1}, 0)
 			g.ctx.LayoutColumn(func() {
-				g.ctx.TreeNode("Test 1", func(res microui.Response) {
-					g.ctx.TreeNode("Test 1a", func(res microui.Response) {
+				g.ctx.TreeNode("Test 1", func(res debugui.Response) {
+					g.ctx.TreeNode("Test 1a", func(res debugui.Response) {
 						g.ctx.Label("Hello")
 						g.ctx.Label("World")
 					})
-					g.ctx.TreeNode("Test 1b", func(res microui.Response) {
+					g.ctx.TreeNode("Test 1b", func(res debugui.Response) {
 						if g.ctx.Button("Button 1") != 0 {
 							g.writeLog("Pressed button 1")
 						}
@@ -75,7 +75,7 @@ func (g *Game) testWindow() {
 						}
 					})
 				})
-				g.ctx.TreeNode("Test 2", func(res microui.Response) {
+				g.ctx.TreeNode("Test 2", func(res debugui.Response) {
 					g.ctx.SetLayoutRow([]int{54, 54}, 0)
 					if g.ctx.Button("Button 3") != 0 {
 						g.writeLog("Pressed button 3")
@@ -90,7 +90,7 @@ func (g *Game) testWindow() {
 						g.writeLog("Pressed button 6")
 					}
 				})
-				g.ctx.TreeNode("Test 3", func(res microui.Response) {
+				g.ctx.TreeNode("Test 3", func(res debugui.Response) {
 					g.ctx.Checkbox("Checkbox 1", &g.checks[0])
 					g.ctx.Checkbox("Checkbox 2", &g.checks[1])
 					g.ctx.Checkbox("Checkbox 3", &g.checks[2])
@@ -116,7 +116,7 @@ func (g *Game) testWindow() {
 				g.ctx.Slider(&g.bg[2], 0, 255, 1, 0)
 			})
 			// color preview
-			g.ctx.Control(0, 0, func(r image.Rectangle) microui.Response {
+			g.ctx.Control(0, 0, func(r image.Rectangle) debugui.Response {
 				g.ctx.DrawControl(func(screen *ebiten.Image) {
 					vector.DrawFilledRect(
 						screen,
@@ -131,7 +131,7 @@ func (g *Game) testWindow() {
 					op.GeoM.Translate(float64((r.Min.X+r.Max.X)/2), float64((r.Min.Y+r.Max.Y)/2))
 					op.PrimaryAlign = text.AlignCenter
 					op.SecondaryAlign = text.AlignCenter
-					microui.DrawText(screen, txt, op)
+					debugui.DrawText(screen, txt, op)
 				})
 				return 0
 			})
@@ -147,10 +147,10 @@ func (g *Game) testWindow() {
 }
 
 func (g *Game) logWindow() {
-	g.ctx.Window("Log Window", image.Rect(350, 40, 650, 490), func(res microui.Response, layout microui.Layout) {
+	g.ctx.Window("Log Window", image.Rect(350, 40, 650, 490), func(res debugui.Response, layout debugui.Layout) {
 		// output text panel
 		g.ctx.SetLayoutRow([]int{-1}, -25)
-		g.ctx.Panel("Log Output", func(layout microui.Layout) {
+		g.ctx.Panel("Log Output", func(layout debugui.Layout) {
 			g.ctx.SetLayoutRow([]int{-1}, -1)
 			g.ctx.Text(g.logBuf)
 			if g.logUpdated {
@@ -162,7 +162,7 @@ func (g *Game) logWindow() {
 		// input textbox + submit button
 		var submitted bool
 		g.ctx.SetLayoutRow([]int{-70, -1}, 0)
-		if g.ctx.TextBox(&g.logSubmitBuf)&microui.ResponseSubmit != 0 {
+		if g.ctx.TextBox(&g.logSubmitBuf)&debugui.ResponseSubmit != 0 {
 			g.ctx.SetFocus(g.ctx.LastID)
 			submitted = true
 		}

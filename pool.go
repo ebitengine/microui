@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 // SPDX-FileCopyrightText: 2024 The Ebitengine Authors
 
-package microui
+package debugui
 
 func (c *Context) poolInit(items []poolItem, id ID) int {
 	f := c.tick

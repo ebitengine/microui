@@ -8,11 +8,11 @@ import (
 
 	"github.com/hajimehoshi/ebiten/v2"
 
-	"github.com/ebitengine/microui"
+	"github.com/ebitengine/debugui"
 )
 
 type Game struct {
-	ctx *microui.Context
+	ctx *debugui.Context
 
 	logBuf       string
 	logSubmitBuf string
@@ -25,7 +25,7 @@ type Game struct {
 
 func New() *Game {
 	return &Game{
-		ctx:    microui.NewContext(),
+		ctx:    debugui.NewContext(),
 		bg:     [3]float64{90, 95, 100},
 		checks: [3]bool{true, false, true},
 	}
