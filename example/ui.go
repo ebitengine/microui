@@ -109,11 +109,11 @@ func (g *Game) testWindow() {
 			g.ctx.LayoutColumn(func() {
 				g.ctx.SetLayoutRow([]int{46, -1}, 0)
 				g.ctx.Label("Red:")
-				g.ctx.Slider(&g.bg[0], 0, 255)
+				g.ctx.Slider(&g.bg[0], 0, 255, 0)
 				g.ctx.Label("Green:")
-				g.ctx.Slider(&g.bg[1], 0, 255)
+				g.ctx.Slider(&g.bg[1], 0, 255, 0)
 				g.ctx.Label("Blue:")
-				g.ctx.Slider(&g.bg[2], 0, 255)
+				g.ctx.Slider(&g.bg[2], 0, 255, 0)
 			})
 			// color preview
 			g.ctx.Control(0, 0, func(r image.Rectangle) microui.Response {

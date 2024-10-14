@@ -13,8 +13,8 @@ func (c *Context) TextBox(buf *string) Response {
 	return c.textBoxEx(buf, 0)
 }
 
-func (c *Context) Slider(value *float64, lo, hi float64) Response {
-	return c.SliderEx(value, lo, hi, 0, sliderFmt, OptAlignCenter)
+func (c *Context) Slider(value *float64, lo, hi float64, step float64) Response {
+	return c.SliderEx(value, lo, hi, step, sliderFmt, OptAlignCenter)
 }
 
 func (c *Context) Number(value *float64, step float64) Response {
