@@ -175,10 +175,3 @@ func (g *Game) logWindow() {
 		}
 	})
 }
-
-func (g *Game) ProcessFrame() {
-	g.ctx.Update(func() {
-		g.testWindow()
-		g.logWindow()
-	})
-}

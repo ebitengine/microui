@@ -35,7 +35,10 @@ func (g *Game) Update() error {
 	if ebiten.IsKeyPressed(ebiten.KeyEscape) {
 		return ebiten.Termination
 	}
-	g.ProcessFrame()
+	g.ctx.Update(func() {
+		g.testWindow()
+		g.logWindow()
+	})
 	return nil
 }
 
