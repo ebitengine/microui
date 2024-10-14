@@ -6,7 +6,7 @@ package microui
 import "image"
 
 func (c *Context) Button(label string) Response {
-	return c.buttonEx(label, OptAlignCenter)
+	return c.buttonEx(label, optionAlignCenter)
 }
 
 func (c *Context) TextBox(buf *string) Response {
@@ -14,15 +14,19 @@ func (c *Context) TextBox(buf *string) Response {
 }
 
 func (c *Context) Slider(value *float64, lo, hi float64, step float64, digits int) Response {
-	return c.sliderEx(value, lo, hi, step, digits, OptAlignCenter)
+	return c.sliderEx(value, lo, hi, step, digits, optionAlignCenter)
 }
 
 func (c *Context) Number(value *float64, step float64, digits int) Response {
-	return c.numberEx(value, step, digits, OptAlignCenter)
+	return c.numberEx(value, step, digits, optionAlignCenter)
 }
 
-func (c *Context) Header(label string) Response {
-	return c.HeaderEx(label, OptExpanded)
+func (c *Context) Header(label string, expanded bool) Response {
+	var opt option
+	if expanded {
+		opt |= optionExpanded
+	}
+	return c.headerEx(label, opt)
 }
 
 func (c *Context) TreeNode(label string, f func(res Response)) {

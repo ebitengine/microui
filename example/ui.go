@@ -26,7 +26,7 @@ func (g *Game) writeLog(text string) {
 func (g *Game) testWindow() {
 	g.ctx.Window("Demo Window", image.Rect(40, 40, 340, 490), func(res microui.Response, layout microui.Layout) {
 		// window info
-		if g.ctx.Header("Window Info") != 0 {
+		if g.ctx.Header("Window Info", false) != 0 {
 			g.ctx.SetLayoutRow([]int{54, -1}, 0)
 			g.ctx.Label("Position:")
 			g.ctx.Label(fmt.Sprintf("%d, %d", layout.Rect.Min.X, layout.Rect.Min.Y))
@@ -35,7 +35,7 @@ func (g *Game) testWindow() {
 		}
 
 		// labels + buttons
-		if g.ctx.HeaderEx("Test Buttons", microui.OptExpanded) != 0 {
+		if g.ctx.Header("Test Buttons", true) != 0 {
 			g.ctx.SetLayoutRow([]int{100, -110, -1}, 0)
 			g.ctx.Label("Test buttons 1:")
 			if g.ctx.Button("Button 1") != 0 {
@@ -58,7 +58,7 @@ func (g *Game) testWindow() {
 		}
 
 		// tree
-		if g.ctx.HeaderEx("Tree and Text", microui.OptExpanded) != 0 {
+		if g.ctx.Header("Tree and Text", true) != 0 {
 			g.ctx.SetLayoutRow([]int{140, -1}, 0)
 			g.ctx.LayoutColumn(func() {
 				g.ctx.TreeNode("Test 1", func(res microui.Response) {
@@ -103,7 +103,7 @@ func (g *Game) testWindow() {
 		}
 
 		// background color sliders
-		if g.ctx.HeaderEx("Background Color", microui.OptExpanded) != 0 {
+		if g.ctx.Header("Background Color", true) != 0 {
 			g.ctx.SetLayoutRow([]int{-78, -1}, 74)
 			// sliders
 			g.ctx.LayoutColumn(func() {
@@ -138,7 +138,7 @@ func (g *Game) testWindow() {
 		}
 
 		// Number
-		if g.ctx.HeaderEx("Number", microui.OptExpanded) != 0 {
+		if g.ctx.Header("Number", true) != 0 {
 			g.ctx.SetLayoutRow([]int{-1}, 0)
 			g.ctx.Number(&g.num1, 0.1, 2)
 			g.ctx.Slider(&g.num2, 0, 10, 0.1, 2)

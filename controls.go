@@ -25,8 +25,8 @@ func (c *Context) inHoverRoot() bool {
 	return false
 }
 
-func (c *Context) drawControlFrame(id ID, rect image.Rectangle, colorid int, opt Option) {
-	if (opt & OptNoFrame) != 0 {
+func (c *Context) drawControlFrame(id ID, rect image.Rectangle, colorid int, opt option) {
+	if (opt & optionNoFrame) != 0 {
 		return
 	}
 	if c.focus == id {
@@ -37,14 +37,14 @@ func (c *Context) drawControlFrame(id ID, rect image.Rectangle, colorid int, opt
 	c.drawFrame(rect, colorid)
 }
 
-func (c *Context) drawControlText(str string, rect image.Rectangle, colorid int, opt Option) {
+func (c *Context) drawControlText(str string, rect image.Rectangle, colorid int, opt option) {
 	var pos image.Point
 	tw := textWidth(str)
 	c.pushClipRect(rect)
 	pos.Y = rect.Min.Y + (rect.Dy()-lineHeight())/2
-	if (opt & OptAlignCenter) != 0 {
+	if (opt & optionAlignCenter) != 0 {
 		pos.X = rect.Min.X + (rect.Dx()-tw)/2
-	} else if (opt & OptAlignRight) != 0 {
+	} else if (opt & optionAlignRight) != 0 {
 		pos.X = rect.Min.X + rect.Dx() - tw - c.style.padding
 	} else {
 		pos.X = rect.Min.X + c.style.padding
@@ -57,7 +57,7 @@ func (c *Context) mouseOver(rect image.Rectangle) bool {
 	return c.mousePos.In(rect) && c.mousePos.In(c.clipRect()) && c.inHoverRoot()
 }
 
-func (c *Context) updateControl(id ID, rect image.Rectangle, opt Option) {
+func (c *Context) updateControl(id ID, rect image.Rectangle, opt option) {
 	if id == 0 {
 		return
 	}
@@ -67,7 +67,7 @@ func (c *Context) updateControl(id ID, rect image.Rectangle, opt Option) {
 	if c.focus == id {
 		c.keepFocus = true
 	}
-	if (opt & OptNoInteract) != 0 {
+	if (opt & optionNoInteract) != 0 {
 		return
 	}
 	if mouseover && c.mouseDown == 0 {
@@ -78,7 +78,7 @@ func (c *Context) updateControl(id ID, rect image.Rectangle, opt Option) {
 		if c.mousePressed != 0 && !mouseover {
 			c.SetFocus(0)
 		}
-		if c.mouseDown == 0 && (^opt&OptHoldFocus) != 0 {
+		if c.mouseDown == 0 && (^opt&optionHoldFocus) != 0 {
 			c.SetFocus(0)
 		}
 	}
@@ -92,7 +92,7 @@ func (c *Context) updateControl(id ID, rect image.Rectangle, opt Option) {
 	}
 }
 
-func (c *Context) Control(id ID, opt Option, f func(r image.Rectangle) Response) Response {
+func (c *Context) Control(id ID, opt option, f func(r image.Rectangle) Response) Response {
 	r := c.layoutNext()
 	c.updateControl(id, r, opt)
 	return f(r)
@@ -138,7 +138,7 @@ func (c *Context) Label(text string) {
 	})
 }
 
-func (c *Context) buttonEx(label string, opt Option) Response {
+func (c *Context) buttonEx(label string, opt option) Response {
 	var id ID
 	if len(label) > 0 {
 		id = c.id([]byte(label))
@@ -180,8 +180,8 @@ func (c *Context) Checkbox(label string, state *bool) Response {
 	})
 }
 
-func (c *Context) textBoxRaw(buf *string, id ID, opt Option) Response {
-	return c.Control(id, opt|OptHoldFocus, func(r image.Rectangle) Response {
+func (c *Context) textBoxRaw(buf *string, id ID, opt option) Response {
+	return c.Control(id, opt|optionHoldFocus, func(r image.Rectangle) Response {
 		var res Response
 		buflen := len(*buf)
 
@@ -244,7 +244,7 @@ func (c *Context) numberTextBox(value *float64, id ID) bool {
 	return false
 }
 
-func (c *Context) textBoxEx(buf *string, opt Option) Response {
+func (c *Context) textBoxEx(buf *string, opt option) Response {
 	id := c.id(ptrToBytes(unsafe.Pointer(buf)))
 	return c.textBoxRaw(buf, id, opt)
 }
@@ -253,7 +253,7 @@ func formatNumber(v float64, digits int) string {
 	return fmt.Sprintf("%."+strconv.Itoa(digits)+"f", v)
 }
 
-func (c *Context) sliderEx(value *float64, low, high, step float64, digits int, opt Option) Response {
+func (c *Context) sliderEx(value *float64, low, high, step float64, digits int, opt option) Response {
 	last := *value
 	v := last
 	id := c.id(ptrToBytes(unsafe.Pointer(value)))
@@ -295,7 +295,7 @@ func (c *Context) sliderEx(value *float64, low, high, step float64, digits int, 
 	})
 }
 
-func (c *Context) numberEx(value *float64, step float64, digits int, opt Option) Response {
+func (c *Context) numberEx(value *float64, step float64, digits int, opt option) Response {
 	id := c.id(ptrToBytes(unsafe.Pointer(value)))
 	last := *value
 
@@ -326,14 +326,14 @@ func (c *Context) numberEx(value *float64, step float64, digits int, opt Option)
 	})
 }
 
-func (c *Context) header(label string, istreenode bool, opt Option) Response {
+func (c *Context) header(label string, istreenode bool, opt option) Response {
 	id := c.id([]byte(label))
 	idx := c.poolGet(c.treeNodePool[:], id)
 	c.SetLayoutRow([]int{-1}, 0)
 
 	active := idx >= 0
 	var expanded bool
-	if (opt & OptExpanded) != 0 {
+	if (opt & optionExpanded) != 0 {
 		expanded = !active
 	} else {
 		expanded = active
@@ -391,11 +391,11 @@ func (c *Context) header(label string, istreenode bool, opt Option) Response {
 	})
 }
 
-func (c *Context) HeaderEx(label string, opt Option) Response {
+func (c *Context) headerEx(label string, opt option) Response {
 	return c.header(label, false, opt)
 }
 
-func (c *Context) treeNode(label string, opt Option, f func(res Response)) {
+func (c *Context) treeNode(label string, opt option, f func(res Response)) {
 	res := c.header(label, true, opt)
 	if res&ResponseActive == 0 {
 		return
@@ -511,15 +511,15 @@ func (c *Context) scrollbars(cnt *container, body image.Rectangle) image.Rectang
 	return body
 }
 
-func (c *Context) pushContainerBody(cnt *container, body image.Rectangle, opt Option) {
-	if (^opt & OptNoScroll) != 0 {
+func (c *Context) pushContainerBody(cnt *container, body image.Rectangle, opt option) {
+	if (^opt & optionNoScroll) != 0 {
 		body = c.scrollbars(cnt, body)
 	}
 	c.pushLayout(body.Inset(c.style.padding), cnt.layout.Scroll)
 	cnt.layout.Body = body
 }
 
-func (c *Context) window(title string, rect image.Rectangle, opt Option, f func(res Response, layout Layout)) {
+func (c *Context) window(title string, rect image.Rectangle, opt option, f func(res Response, layout Layout)) {
 	id := c.id([]byte(title))
 
 	cnt := c.container(id, opt)
@@ -565,18 +565,18 @@ func (c *Context) window(title string, rect image.Rectangle, opt Option, f func(
 	rect = body
 
 	// draw frame
-	if (^opt & OptNoFrame) != 0 {
+	if (^opt & optionNoFrame) != 0 {
 		c.drawFrame(rect, ColorWindowBG)
 	}
 
 	// do title bar
-	if (^opt & OptNoTitle) != 0 {
+	if (^opt & optionNoTitle) != 0 {
 		tr := rect
 		tr.Max.Y = tr.Min.Y + c.style.titleHeight
 		c.drawFrame(tr, ColorTitleBG)
 
 		// do title text
-		if (^opt & OptNoTitle) != 0 {
+		if (^opt & optionNoTitle) != 0 {
 			id := c.id([]byte("!title"))
 			c.updateControl(id, tr, opt)
 			c.drawControlText(title, tr, ColorTitleText, opt)
@@ -587,7 +587,7 @@ func (c *Context) window(title string, rect image.Rectangle, opt Option, f func(
 		}
 
 		// do `close` button
-		if (^opt & OptNoClose) != 0 {
+		if (^opt & optionNoClose) != 0 {
 			id := c.id([]byte("!close"))
 			r := image.Rect(tr.Max.X-tr.Dy(), tr.Min.Y, tr.Max.X, tr.Max.Y)
 			tr.Max.X -= r.Dx()
@@ -602,7 +602,7 @@ func (c *Context) window(title string, rect image.Rectangle, opt Option, f func(
 	c.pushContainerBody(cnt, body, opt)
 
 	// do `resize` handle
-	if (^opt & OptNoResize) != 0 {
+	if (^opt & optionNoResize) != 0 {
 		sz := c.style.titleHeight
 		id := c.id([]byte("!resize"))
 		r := image.Rect(rect.Max.X-sz, rect.Max.Y-sz, rect.Max.X, rect.Max.Y)
@@ -614,14 +614,14 @@ func (c *Context) window(title string, rect image.Rectangle, opt Option, f func(
 	}
 
 	// resize to content size
-	if (opt & OptAutoSize) != 0 {
+	if (opt & optionAutoSize) != 0 {
 		r := c.layout().body
 		cnt.layout.Rect.Max.X = cnt.layout.Rect.Min.X + cnt.layout.ContentSize.X + (cnt.layout.Rect.Dx() - r.Dx())
 		cnt.layout.Rect.Max.Y = cnt.layout.Rect.Min.Y + cnt.layout.ContentSize.Y + (cnt.layout.Rect.Dy() - r.Dy())
 	}
 
 	// close if this is a popup window and elsewhere was clicked
-	if (opt&OptPopup) != 0 && c.mousePressed != 0 && c.hoverRoot != cnt {
+	if (opt&optionPopup) != 0 && c.mousePressed != 0 && c.hoverRoot != cnt {
 		cnt.open = false
 	}
 
@@ -643,17 +643,17 @@ func (c *Context) OpenPopup(name string) {
 }
 
 func (c *Context) Popup(name string, f func(res Response, layout Layout)) {
-	opt := OptPopup | OptAutoSize | OptNoResize | OptNoScroll | OptNoTitle | OptClosed
+	opt := optionPopup | optionAutoSize | optionNoResize | optionNoScroll | optionNoTitle | optionClosed
 	c.window(name, image.Rectangle{}, opt, f)
 }
 
-func (c *Context) panel(name string, opt Option, f func(layout Layout)) {
+func (c *Context) panel(name string, opt option, f func(layout Layout)) {
 	id := c.pushID([]byte(name))
 	defer c.popID()
 
 	cnt := c.container(id, opt)
 	cnt.layout.Rect = c.layoutNext()
-	if (^opt & OptNoFrame) != 0 {
+	if (^opt & optionNoFrame) != 0 {
 		c.drawFrame(cnt.layout.Rect, ColorPanelBG)
 	}
 

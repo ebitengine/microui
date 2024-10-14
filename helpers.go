@@ -106,16 +106,16 @@ func (c *Context) SetScroll(scroll image.Point) {
 	c.currentContainer().layout.Scroll = scroll
 }
 
-func (c *Context) container(id ID, opt Option) *container {
+func (c *Context) container(id ID, opt option) *container {
 	// try to get existing container from pool
 	if idx := c.poolGet(c.containerPool[:], id); idx >= 0 {
-		if c.containers[idx].open || (^opt&OptClosed) != 0 {
+		if c.containers[idx].open || (^opt&optionClosed) != 0 {
 			c.poolUpdate(c.containerPool[:], idx)
 		}
 		return &c.containers[idx]
 	}
 
-	if (opt & OptClosed) != 0 {
+	if (opt & optionClosed) != 0 {
 		return nil
 	}
 

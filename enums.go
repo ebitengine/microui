@@ -52,22 +52,22 @@ const (
 	ResponseChange Response = (1 << 2)
 )
 
-type Option int
+type option int
 
 const (
-	OptAlignCenter Option = (1 << iota)
-	OptAlignRight
-	OptNoInteract
-	OptNoFrame
-	OptNoResize
-	OptNoScroll
-	OptNoClose
-	OptNoTitle
-	OptHoldFocus
-	OptAutoSize
-	OptPopup
-	OptClosed
-	OptExpanded
+	optionAlignCenter option = (1 << iota)
+	optionAlignRight
+	optionNoInteract
+	optionNoFrame
+	optionNoResize
+	optionNoScroll
+	optionNoClose
+	optionNoTitle
+	optionHoldFocus
+	optionAutoSize
+	optionPopup
+	optionClosed
+	optionExpanded
 )
 
 const (
