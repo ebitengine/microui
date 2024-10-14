@@ -151,11 +151,10 @@ func (g *Game) logWindow() {
 		// output text panel
 		g.ctx.SetLayoutRow([]int{-1}, -25)
 		g.ctx.Panel("Log Output", func(layout microui.Layout) {
-			panel := g.ctx.CurrentContainer()
 			g.ctx.SetLayoutRow([]int{-1}, -1)
 			g.ctx.Text(g.logBuf)
 			if g.logUpdated {
-				panel.Scroll.Y = panel.ContentSize.Y
+				g.ctx.SetScroll(image.Pt(layout.Scroll.X, layout.ContentSize.Y))
 				g.logUpdated = false
 			}
 		})

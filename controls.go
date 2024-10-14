@@ -406,7 +406,7 @@ func (c *Context) treeNode(label string, opt Option, f func(res Response)) {
 }
 
 // x = x, y = y, w = w, h = h
-func (c *Context) scrollbarVertical(cnt *Container, b image.Rectangle, cs image.Point) {
+func (c *Context) scrollbarVertical(cnt *container, b image.Rectangle, cs image.Point) {
 	maxscroll := cs.Y - b.Dy()
 	if maxscroll > 0 && b.Dy() > 0 {
 		id := c.id([]byte("!scrollbar" + "y"))
@@ -419,16 +419,16 @@ func (c *Context) scrollbarVertical(cnt *Container, b image.Rectangle, cs image.
 		// handle input
 		c.updateControl(id, base, 0)
 		if c.focus == id && c.mouseDown == mouseLeft {
-			cnt.Scroll.Y += c.mouseDelta.Y * cs.Y / base.Dy()
+			cnt.layout.Scroll.Y += c.mouseDelta.Y * cs.Y / base.Dy()
 		}
 		// clamp scroll to limits
-		cnt.Scroll.Y = clamp(cnt.Scroll.Y, 0, maxscroll)
+		cnt.layout.Scroll.Y = clamp(cnt.layout.Scroll.Y, 0, maxscroll)
 
 		// draw base and thumb
 		c.drawFrame(base, ColorScrollBase)
 		thumb := base
 		thumb.Max.Y = thumb.Min.Y + max(c.Style.ThumbSize, base.Dy()*b.Dy()/cs.Y)
-		thumb = thumb.Add(image.Pt(0, cnt.Scroll.Y*(base.Dy()-thumb.Dy())/maxscroll))
+		thumb = thumb.Add(image.Pt(0, cnt.layout.Scroll.Y*(base.Dy()-thumb.Dy())/maxscroll))
 		c.drawFrame(thumb, ColorScrollThumb)
 
 		// set this as the scroll_target (will get scrolled on mousewheel)
@@ -437,12 +437,12 @@ func (c *Context) scrollbarVertical(cnt *Container, b image.Rectangle, cs image.
 			c.scrollTarget = cnt
 		}
 	} else {
-		cnt.Scroll.Y = 0
+		cnt.layout.Scroll.Y = 0
 	}
 }
 
 // x = y, y = x, w = h, h = w
-func (c *Context) scrollbarHorizontal(cnt *Container, b image.Rectangle, cs image.Point) {
+func (c *Context) scrollbarHorizontal(cnt *container, b image.Rectangle, cs image.Point) {
 	maxscroll := cs.X - b.Dx()
 	if maxscroll > 0 && b.Dx() > 0 {
 		id := c.id([]byte("!scrollbar" + "x"))
@@ -455,16 +455,16 @@ func (c *Context) scrollbarHorizontal(cnt *Container, b image.Rectangle, cs imag
 		// handle input
 		c.updateControl(id, base, 0)
 		if c.focus == id && c.mouseDown == mouseLeft {
-			cnt.Scroll.X += c.mouseDelta.X * cs.X / base.Dx()
+			cnt.layout.Scroll.X += c.mouseDelta.X * cs.X / base.Dx()
 		}
 		// clamp scroll to limits
-		cnt.Scroll.X = clamp(cnt.Scroll.X, 0, maxscroll)
+		cnt.layout.Scroll.X = clamp(cnt.layout.Scroll.X, 0, maxscroll)
 
 		// draw base and thumb
 		c.drawFrame(base, ColorScrollBase)
 		thumb := base
 		thumb.Max.X = thumb.Min.X + max(c.Style.ThumbSize, base.Dx()*b.Dx()/cs.X)
-		thumb = thumb.Add(image.Pt(cnt.Scroll.X*(base.Dx()-thumb.Dx())/maxscroll, 0))
+		thumb = thumb.Add(image.Pt(cnt.layout.Scroll.X*(base.Dx()-thumb.Dx())/maxscroll, 0))
 		c.drawFrame(thumb, ColorScrollThumb)
 
 		// set this as the scroll_target (will get scrolled on mousewheel)
@@ -473,12 +473,12 @@ func (c *Context) scrollbarHorizontal(cnt *Container, b image.Rectangle, cs imag
 			c.scrollTarget = cnt
 		}
 	} else {
-		cnt.Scroll.X = 0
+		cnt.layout.Scroll.X = 0
 	}
 }
 
 // if `swap` is true, X = Y, Y = X, W = H, H = W
-func (c *Context) scrollbar(cnt *Container, b image.Rectangle, cs image.Point, swap bool) {
+func (c *Context) scrollbar(cnt *container, b image.Rectangle, cs image.Point, swap bool) {
 	if swap {
 		c.scrollbarHorizontal(cnt, b, cs)
 	} else {
@@ -486,17 +486,17 @@ func (c *Context) scrollbar(cnt *Container, b image.Rectangle, cs image.Point, s
 	}
 }
 
-func (c *Context) scrollbars(cnt *Container, body image.Rectangle) image.Rectangle {
+func (c *Context) scrollbars(cnt *container, body image.Rectangle) image.Rectangle {
 	sz := c.Style.ScrollbarSize
-	cs := cnt.ContentSize
+	cs := cnt.layout.ContentSize
 	cs.X += c.Style.Padding * 2
 	cs.Y += c.Style.Padding * 2
 	c.pushClipRect(body)
 	// resize body to make room for scrollbars
-	if cs.Y > cnt.Body.Dy() {
+	if cs.Y > cnt.layout.Body.Dy() {
 		body.Max.X -= sz
 	}
-	if cs.X > cnt.Body.Dx() {
+	if cs.X > cnt.layout.Body.Dx() {
 		body.Max.Y -= sz
 	}
 	// to create a horizontal or vertical scrollbar almost-identical code is
@@ -507,12 +507,12 @@ func (c *Context) scrollbars(cnt *Container, body image.Rectangle) image.Rectang
 	return body
 }
 
-func (c *Context) pushContainerBody(cnt *Container, body image.Rectangle, opt Option) {
+func (c *Context) pushContainerBody(cnt *container, body image.Rectangle, opt Option) {
 	if (^opt & OptNoScroll) != 0 {
 		body = c.scrollbars(cnt, body)
 	}
-	c.pushLayout(body.Inset(c.Style.Padding), cnt.Scroll)
-	cnt.Body = body
+	c.pushLayout(body.Inset(c.Style.Padding), cnt.layout.Scroll)
+	cnt.layout.Body = body
 }
 
 func (c *Context) window(title string, rect image.Rectangle, opt Option, f func(res Response, layout Layout)) {
@@ -527,8 +527,8 @@ func (c *Context) window(title string, rect image.Rectangle, opt Option, f func(
 	// This is popped at endRootContainer.
 	// TODO: This is tricky. Refactor this.
 
-	if cnt.Rect.Dx() == 0 {
-		cnt.Rect = rect
+	if cnt.layout.Rect.Dx() == 0 {
+		cnt.layout.Rect = rect
 	}
 
 	c.containerStack = append(c.containerStack, cnt)
@@ -540,14 +540,14 @@ func (c *Context) window(title string, rect image.Rectangle, opt Option, f func(
 	defer func() {
 		// push tail 'goto' jump command and set head 'skip' command. the final steps
 		// on initing these are done in End
-		cnt := c.CurrentContainer()
+		cnt := c.currentContainer()
 		cnt.tailIdx = c.pushJump(-1)
 		c.commandList[cnt.headIdx].jump.dstIdx = len(c.commandList) //- 1
 	}()
 
 	// set as hover root if the mouse is overlapping this container and it has a
 	// higher zindex than the current hover root
-	if c.mousePos.In(cnt.Rect) && (c.nextHoverRoot == nil || cnt.zIndex > c.nextHoverRoot.zIndex) {
+	if c.mousePos.In(cnt.layout.Rect) && (c.nextHoverRoot == nil || cnt.zIndex > c.nextHoverRoot.zIndex) {
 		c.nextHoverRoot = cnt
 	}
 
@@ -557,7 +557,7 @@ func (c *Context) window(title string, rect image.Rectangle, opt Option, f func(
 	c.clipStack = append(c.clipStack, unclippedRect)
 	defer c.popClipRect()
 
-	body := cnt.Rect
+	body := cnt.layout.Rect
 	rect = body
 
 	// draw frame
@@ -577,7 +577,7 @@ func (c *Context) window(title string, rect image.Rectangle, opt Option, f func(
 			c.updateControl(id, tr, opt)
 			c.drawControlText(title, tr, ColorTitleText, opt)
 			if id == c.focus && c.mouseDown == mouseLeft {
-				cnt.Rect = cnt.Rect.Add(c.mouseDelta)
+				cnt.layout.Rect = cnt.layout.Rect.Add(c.mouseDelta)
 			}
 			body.Min.Y += tr.Dy()
 		}
@@ -604,16 +604,16 @@ func (c *Context) window(title string, rect image.Rectangle, opt Option, f func(
 		r := image.Rect(rect.Max.X-sz, rect.Max.Y-sz, rect.Max.X, rect.Max.Y)
 		c.updateControl(id, r, opt)
 		if id == c.focus && c.mouseDown == mouseLeft {
-			cnt.Rect.Max.X = cnt.Rect.Min.X + max(96, cnt.Rect.Dx()+c.mouseDelta.X)
-			cnt.Rect.Max.Y = cnt.Rect.Min.Y + max(64, cnt.Rect.Dy()+c.mouseDelta.Y)
+			cnt.layout.Rect.Max.X = cnt.layout.Rect.Min.X + max(96, cnt.layout.Rect.Dx()+c.mouseDelta.X)
+			cnt.layout.Rect.Max.Y = cnt.layout.Rect.Min.Y + max(64, cnt.layout.Rect.Dy()+c.mouseDelta.Y)
 		}
 	}
 
 	// resize to content size
 	if (opt & OptAutoSize) != 0 {
 		r := c.layout().body
-		cnt.Rect.Max.X = cnt.Rect.Min.X + cnt.ContentSize.X + (cnt.Rect.Dx() - r.Dx())
-		cnt.Rect.Max.Y = cnt.Rect.Min.Y + cnt.ContentSize.Y + (cnt.Rect.Dy() - r.Dy())
+		cnt.layout.Rect.Max.X = cnt.layout.Rect.Min.X + cnt.layout.ContentSize.X + (cnt.layout.Rect.Dx() - r.Dx())
+		cnt.layout.Rect.Max.Y = cnt.layout.Rect.Min.Y + cnt.layout.ContentSize.Y + (cnt.layout.Rect.Dy() - r.Dy())
 	}
 
 	// close if this is a popup window and elsewhere was clicked
@@ -621,10 +621,10 @@ func (c *Context) window(title string, rect image.Rectangle, opt Option, f func(
 		cnt.open = false
 	}
 
-	c.pushClipRect(cnt.Body)
+	c.pushClipRect(cnt.layout.Body)
 	defer c.popClipRect()
 
-	f(ResponseActive, c.CurrentContainer().Layout)
+	f(ResponseActive, c.currentContainer().layout)
 }
 
 func (c *Context) OpenPopup(name string) {
@@ -633,7 +633,7 @@ func (c *Context) OpenPopup(name string) {
 	c.nextHoverRoot = cnt
 	c.hoverRoot = c.nextHoverRoot
 	// position at mouse cursor, open and bring-to-front
-	cnt.Rect = image.Rect(c.mousePos.X, c.mousePos.Y, c.mousePos.X+1, c.mousePos.Y+1)
+	cnt.layout.Rect = image.Rect(c.mousePos.X, c.mousePos.Y, c.mousePos.X+1, c.mousePos.Y+1)
 	cnt.open = true
 	c.bringToFront(cnt)
 }
@@ -648,17 +648,17 @@ func (c *Context) panel(name string, opt Option, f func(layout Layout)) {
 	defer c.popID()
 
 	cnt := c.container(id, opt)
-	cnt.Rect = c.layoutNext()
+	cnt.layout.Rect = c.layoutNext()
 	if (^opt & OptNoFrame) != 0 {
-		c.drawFrame(cnt.Rect, ColorPanelBG)
+		c.drawFrame(cnt.layout.Rect, ColorPanelBG)
 	}
 
 	c.containerStack = append(c.containerStack, cnt)
-	c.pushContainerBody(cnt, cnt.Rect, opt)
+	c.pushContainerBody(cnt, cnt.layout.Rect, opt)
 	defer c.popContainer()
 
-	c.pushClipRect(cnt.Body)
+	c.pushClipRect(cnt.layout.Body)
 	defer c.popClipRect()
 
-	f(c.CurrentContainer().Layout)
+	f(c.currentContainer().layout)
 }

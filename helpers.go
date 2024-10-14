@@ -121,10 +121,10 @@ func (c *Context) layout() *layout {
 }
 
 func (c *Context) popContainer() {
-	cnt := c.CurrentContainer()
+	cnt := c.currentContainer()
 	layout := c.layout()
-	cnt.ContentSize.X = layout.max.X - layout.body.Min.X
-	cnt.ContentSize.Y = layout.max.Y - layout.body.Min.Y
+	cnt.layout.ContentSize.X = layout.max.X - layout.body.Min.X
+	cnt.layout.ContentSize.Y = layout.max.Y - layout.body.Min.Y
 	// pop container, layout and id
 	// pop()
 	c.containerStack = c.containerStack[:len(c.containerStack)-1]
@@ -132,11 +132,15 @@ func (c *Context) popContainer() {
 	c.layoutStack = c.layoutStack[:len(c.layoutStack)-1]
 }
 
-func (c *Context) CurrentContainer() *Container {
+func (c *Context) currentContainer() *container {
 	return c.containerStack[len(c.containerStack)-1]
 }
 
-func (c *Context) container(id ID, opt Option) *Container {
+func (c *Context) SetScroll(scroll image.Point) {
+	c.currentContainer().layout.Scroll = scroll
+}
+
+func (c *Context) container(id ID, opt Option) *container {
 	// try to get existing container from pool
 	if idx := c.poolGet(c.containerPool[:], id); idx >= 0 {
 		if c.containers[idx].open || (^opt&OptClosed) != 0 {
@@ -152,7 +156,7 @@ func (c *Context) container(id ID, opt Option) *Container {
 	// container not found in pool: init new container
 	idx := c.poolInit(c.containerPool[:], id)
 	cnt := &c.containers[idx]
-	*cnt = Container{}
+	*cnt = container{}
 	cnt.headIdx = -1
 	cnt.tailIdx = -1
 	cnt.open = true
@@ -160,12 +164,12 @@ func (c *Context) container(id ID, opt Option) *Container {
 	return cnt
 }
 
-func (c *Context) Container(name string) *Container {
+func (c *Context) Container(name string) *container {
 	id := c.id([]byte(name))
 	return c.container(id, 0)
 }
 
-func (c *Context) bringToFront(cnt *Container) {
+func (c *Context) bringToFront(cnt *container) {
 	c.lastZIndex++
 	cnt.zIndex = c.lastZIndex
 }
@@ -203,8 +207,8 @@ func (c *Context) end() {
 
 	// handle scroll input
 	if c.scrollTarget != nil {
-		c.scrollTarget.Scroll.X += c.scrollDelta.X
-		c.scrollTarget.Scroll.Y += c.scrollDelta.Y
+		c.scrollTarget.layout.Scroll.X += c.scrollDelta.X
+		c.scrollTarget.layout.Scroll.Y += c.scrollDelta.Y
 	}
 
 	// unset focus if focus id was not touched this frame

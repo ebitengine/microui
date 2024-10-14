@@ -73,9 +73,8 @@ type command struct {
 	draw drawCommand // type 6
 }
 
-type Container struct {
-	Layout
-
+type container struct {
+	layout  Layout
 	headIdx int
 	tailIdx int
 	zIndex  int
@@ -111,17 +110,17 @@ type Context struct {
 	lastZIndex    int
 	keepFocus     bool
 	tick          int
-	hoverRoot     *Container
-	nextHoverRoot *Container
-	scrollTarget  *Container
+	hoverRoot     *container
+	nextHoverRoot *container
+	scrollTarget  *container
 	numberEditBuf string
 	numberEdit    ID
 
 	// stacks
 
 	commandList    []*command
-	rootList       []*Container
-	containerStack []*Container
+	rootList       []*container
+	containerStack []*container
 	clipStack      []image.Rectangle
 	idStack        []ID
 	layoutStack    []layout
@@ -129,7 +128,7 @@ type Context struct {
 	// retained state pools
 
 	containerPool [containerPoolSize]poolItem
-	containers    [containerPoolSize]Container
+	containers    [containerPoolSize]container
 	treeNodePool  [treeNodePoolSize]poolItem
 
 	// input state
