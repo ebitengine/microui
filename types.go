@@ -88,21 +88,21 @@ type Layout struct {
 	Scroll      image.Point
 }
 
-type Style struct {
-	Size          image.Point
-	Padding       int
-	Spacing       int
-	Indent        int
-	TitleHeight   int
-	ScrollbarSize int
-	ThumbSize     int
-	Colors        [ColorMax + 1]color.RGBA
+type style struct {
+	size          image.Point
+	padding       int
+	spacing       int
+	indent        int
+	titleHeight   int
+	scrollbarSize int
+	thumbSize     int
+	colors        [ColorMax + 1]color.RGBA
 }
 
 type Context struct {
 	// core state
 
-	Style         *Style
+	style         *style
 	hover         ID
 	focus         ID
 	LastID        ID

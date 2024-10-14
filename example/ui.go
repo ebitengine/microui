@@ -147,7 +147,7 @@ func (g *Game) testWindow() {
 }
 
 func (g *Game) logWindow() {
-	g.ctx.Window("Log Window", image.Rect(350, 40, 650, 240), func(res microui.Response, layout microui.Layout) {
+	g.ctx.Window("Log Window", image.Rect(350, 40, 650, 490), func(res microui.Response, layout microui.Layout) {
 		// output text panel
 		g.ctx.SetLayoutRow([]int{-1}, -25)
 		g.ctx.Panel("Log Output", func(layout microui.Layout) {
@@ -176,70 +176,9 @@ func (g *Game) logWindow() {
 	})
 }
 
-func (g *Game) byteSlider(fvalue *float64, value *byte, low, high byte) microui.Response {
-	*fvalue = float64(*value)
-	res := g.ctx.SliderEx(fvalue, float64(low), float64(high), 0, "%.0f", microui.OptAlignCenter)
-	*value = byte(*fvalue)
-	return res
-}
-
-var (
-	fcolors = [14]struct {
-		R, G, B, A float64
-	}{}
-	colors = []struct {
-		Label   string
-		ColorID int
-	}{
-		{"text:", microui.ColorText},
-		{"border:", microui.ColorBorder},
-		{"windowbg:", microui.ColorWindowBG},
-		{"titlebg:", microui.ColorTitleBG},
-		{"titletext:", microui.ColorTitleText},
-		{"panelbg:", microui.ColorPanelBG},
-		{"button:", microui.ColorButton},
-		{"buttonhover:", microui.ColorButtonHover},
-		{"buttonfocus:", microui.ColorButtonFocus},
-		{"base:", microui.ColorBase},
-		{"basehover:", microui.ColorBaseHover},
-		{"basefocus:", microui.ColorBaseFocus},
-		{"scrollbase:", microui.ColorScrollBase},
-		{"scrollthumb:", microui.ColorScrollThumb},
-	}
-)
-
-func (g *Game) styleWindow() {
-	g.ctx.Window("Style Editor", image.Rect(350, 250, 650, 490), func(res microui.Response, layout microui.Layout) {
-		sw := int(float64(layout.Body.Dx()) * 0.14)
-		g.ctx.SetLayoutRow([]int{80, sw, sw, sw, sw, -1}, 0)
-		for _, c := range colors {
-			g.ctx.Label(c.Label)
-			g.byteSlider(&fcolors[c.ColorID].R, &g.ctx.Style.Colors[c.ColorID].R, 0, 255)
-			g.byteSlider(&fcolors[c.ColorID].G, &g.ctx.Style.Colors[c.ColorID].G, 0, 255)
-			g.byteSlider(&fcolors[c.ColorID].B, &g.ctx.Style.Colors[c.ColorID].B, 0, 255)
-			g.byteSlider(&fcolors[c.ColorID].A, &g.ctx.Style.Colors[c.ColorID].A, 0, 255)
-			g.ctx.Control(0, 0, func(r image.Rectangle) microui.Response {
-				clr := g.ctx.Style.Colors[c.ColorID]
-				g.ctx.DrawControl(func(target *ebiten.Image) {
-					vector.DrawFilledRect(
-						target,
-						float32(r.Min.X),
-						float32(r.Min.Y),
-						float32(r.Dx()),
-						float32(r.Dy()),
-						clr,
-						false)
-				})
-				return 0
-			})
-		}
-	})
-}
-
 func (g *Game) ProcessFrame() {
 	g.ctx.Update(func() {
 		g.testWindow()
 		g.logWindow()
-		g.styleWindow()
 	})
 }

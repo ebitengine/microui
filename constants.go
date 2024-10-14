@@ -25,15 +25,15 @@ const (
 	sliderFmt = "%.2f"
 )
 
-var defaultStyle Style = Style{
-	Size:          image.Pt(68, 10),
-	Padding:       5,
-	Spacing:       4,
-	Indent:        24,
-	TitleHeight:   24,
-	ScrollbarSize: 12,
-	ThumbSize:     8,
-	Colors: [...]color.RGBA{
+var defaultStyle style = style{
+	size:          image.Pt(68, 10),
+	padding:       5,
+	spacing:       4,
+	indent:        24,
+	titleHeight:   24,
+	scrollbarSize: 12,
+	thumbSize:     8,
+	colors: [...]color.RGBA{
 		{230, 230, 230, 255}, // MU_COLOR_TEXT
 		{25, 25, 25, 255},    // MU_COLOR_BORDER
 		{50, 50, 50, 255},    // MU_COLOR_WINDOWBG

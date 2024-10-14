@@ -45,11 +45,11 @@ func (c *Context) drawControlText(str string, rect image.Rectangle, colorid int,
 	if (opt & OptAlignCenter) != 0 {
 		pos.X = rect.Min.X + (rect.Dx()-tw)/2
 	} else if (opt & OptAlignRight) != 0 {
-		pos.X = rect.Min.X + rect.Dx() - tw - c.Style.Padding
+		pos.X = rect.Min.X + rect.Dx() - tw - c.style.padding
 	} else {
-		pos.X = rect.Min.X + c.Style.Padding
+		pos.X = rect.Min.X + c.style.padding
 	}
-	c.drawText(str, pos, c.Style.Colors[colorid])
+	c.drawText(str, pos, c.style.colors[colorid])
 	c.popClipRect()
 }
 
@@ -99,7 +99,7 @@ func (c *Context) Control(id ID, opt Option, f func(r image.Rectangle) Response)
 }
 
 func (c *Context) Text(text string) {
-	color := c.Style.Colors[ColorText]
+	color := c.style.colors[ColorText]
 	c.LayoutColumn(func() {
 		var endIdx, p int
 		c.SetLayoutRow([]int{-1}, lineHeight())
@@ -172,7 +172,7 @@ func (c *Context) Checkbox(label string, state *bool) Response {
 		// draw
 		c.drawControlFrame(id, box, ColorBase, 0)
 		if *state {
-			c.drawIcon(iconCheck, box, c.Style.Colors[ColorText])
+			c.drawIcon(iconCheck, box, c.style.colors[ColorText])
 		}
 		r = image.Rect(r.Min.X+box.Dx(), r.Min.Y, r.Max.X, r.Max.Y)
 		c.drawControlText(label, r, ColorText, 0)
@@ -206,11 +206,11 @@ func (c *Context) textBoxRaw(buf *string, id ID, opt Option) Response {
 		// draw
 		c.drawControlFrame(id, r, ColorBase, opt)
 		if c.focus == id {
-			color := c.Style.Colors[ColorText]
+			color := c.style.colors[ColorText]
 			textw := textWidth(*buf)
 			texth := lineHeight()
-			ofx := r.Dx() - c.Style.Padding - textw - 1
-			textx := r.Min.X + min(ofx, c.Style.Padding)
+			ofx := r.Dx() - c.style.padding - textw - 1
+			textx := r.Min.X + min(ofx, c.style.padding)
 			texty := r.Min.Y + (r.Dy()-texth)/2
 			c.pushClipRect(r)
 			c.drawText(*buf, image.Pt(textx, texty), color)
@@ -279,7 +279,7 @@ func (c *Context) SliderEx(value *float64, low, high, step float64, format strin
 		// draw base
 		c.drawControlFrame(id, r, ColorBase, opt)
 		// draw thumb
-		w := c.Style.ThumbSize
+		w := c.style.thumbSize
 		x := int((v - low) * float64(r.Dx()-w) / (high - low))
 		thumb := image.Rect(r.Min.X+x, r.Min.Y, r.Min.X+x+w, r.Max.Y)
 		c.drawControlFrame(id, thumb, ColorButton, opt)
@@ -375,9 +375,9 @@ func (c *Context) header(label string, istreenode bool, opt Option) Response {
 		c.drawIcon(
 			icon,
 			image.Rect(r.Min.X, r.Min.Y, r.Min.X+r.Dy(), r.Max.Y),
-			c.Style.Colors[ColorText],
+			c.style.colors[ColorText],
 		)
-		r.Min.X += r.Dy() - c.Style.Padding
+		r.Min.X += r.Dy() - c.style.padding
 		c.drawControlText(label, r, ColorText, 0)
 
 		if expanded {
@@ -396,9 +396,9 @@ func (c *Context) treeNode(label string, opt Option, f func(res Response)) {
 	if res&ResponseActive == 0 {
 		return
 	}
-	c.layout().indent += c.Style.Indent
+	c.layout().indent += c.style.indent
 	defer func() {
-		c.layout().indent -= c.Style.Indent
+		c.layout().indent -= c.style.indent
 	}()
 	c.idStack = append(c.idStack, c.LastID)
 	defer c.popID()
@@ -414,7 +414,7 @@ func (c *Context) scrollbarVertical(cnt *container, b image.Rectangle, cs image.
 		// get sizing / positioning
 		base := b
 		base.Min.X = b.Max.X
-		base.Max.X = base.Min.X + c.Style.ScrollbarSize
+		base.Max.X = base.Min.X + c.style.scrollbarSize
 
 		// handle input
 		c.updateControl(id, base, 0)
@@ -427,7 +427,7 @@ func (c *Context) scrollbarVertical(cnt *container, b image.Rectangle, cs image.
 		// draw base and thumb
 		c.drawFrame(base, ColorScrollBase)
 		thumb := base
-		thumb.Max.Y = thumb.Min.Y + max(c.Style.ThumbSize, base.Dy()*b.Dy()/cs.Y)
+		thumb.Max.Y = thumb.Min.Y + max(c.style.thumbSize, base.Dy()*b.Dy()/cs.Y)
 		thumb = thumb.Add(image.Pt(0, cnt.layout.Scroll.Y*(base.Dy()-thumb.Dy())/maxscroll))
 		c.drawFrame(thumb, ColorScrollThumb)
 
@@ -450,7 +450,7 @@ func (c *Context) scrollbarHorizontal(cnt *container, b image.Rectangle, cs imag
 		// get sizing / positioning
 		base := b
 		base.Min.Y = b.Max.Y
-		base.Max.Y = base.Min.Y + c.Style.ScrollbarSize
+		base.Max.Y = base.Min.Y + c.style.scrollbarSize
 
 		// handle input
 		c.updateControl(id, base, 0)
@@ -463,7 +463,7 @@ func (c *Context) scrollbarHorizontal(cnt *container, b image.Rectangle, cs imag
 		// draw base and thumb
 		c.drawFrame(base, ColorScrollBase)
 		thumb := base
-		thumb.Max.X = thumb.Min.X + max(c.Style.ThumbSize, base.Dx()*b.Dx()/cs.X)
+		thumb.Max.X = thumb.Min.X + max(c.style.thumbSize, base.Dx()*b.Dx()/cs.X)
 		thumb = thumb.Add(image.Pt(cnt.layout.Scroll.X*(base.Dx()-thumb.Dx())/maxscroll, 0))
 		c.drawFrame(thumb, ColorScrollThumb)
 
@@ -487,10 +487,10 @@ func (c *Context) scrollbar(cnt *container, b image.Rectangle, cs image.Point, s
 }
 
 func (c *Context) scrollbars(cnt *container, body image.Rectangle) image.Rectangle {
-	sz := c.Style.ScrollbarSize
+	sz := c.style.scrollbarSize
 	cs := cnt.layout.ContentSize
-	cs.X += c.Style.Padding * 2
-	cs.Y += c.Style.Padding * 2
+	cs.X += c.style.padding * 2
+	cs.Y += c.style.padding * 2
 	c.pushClipRect(body)
 	// resize body to make room for scrollbars
 	if cs.Y > cnt.layout.Body.Dy() {
@@ -511,7 +511,7 @@ func (c *Context) pushContainerBody(cnt *container, body image.Rectangle, opt Op
 	if (^opt & OptNoScroll) != 0 {
 		body = c.scrollbars(cnt, body)
 	}
-	c.pushLayout(body.Inset(c.Style.Padding), cnt.layout.Scroll)
+	c.pushLayout(body.Inset(c.style.padding), cnt.layout.Scroll)
 	cnt.layout.Body = body
 }
 
@@ -568,7 +568,7 @@ func (c *Context) window(title string, rect image.Rectangle, opt Option, f func(
 	// do title bar
 	if (^opt & OptNoTitle) != 0 {
 		tr := rect
-		tr.Max.Y = tr.Min.Y + c.Style.TitleHeight
+		tr.Max.Y = tr.Min.Y + c.style.titleHeight
 		c.drawFrame(tr, ColorTitleBG)
 
 		// do title text
@@ -587,7 +587,7 @@ func (c *Context) window(title string, rect image.Rectangle, opt Option, f func(
 			id := c.id([]byte("!close"))
 			r := image.Rect(tr.Max.X-tr.Dy(), tr.Min.Y, tr.Max.X, tr.Max.Y)
 			tr.Max.X -= r.Dx()
-			c.drawIcon(iconClose, r, c.Style.Colors[ColorTitleText])
+			c.drawIcon(iconClose, r, c.style.colors[ColorTitleText])
 			c.updateControl(id, r, opt)
 			if c.mousePressed == mouseLeft && id == c.focus {
 				cnt.open = false
@@ -599,7 +599,7 @@ func (c *Context) window(title string, rect image.Rectangle, opt Option, f func(
 
 	// do `resize` handle
 	if (^opt & OptNoResize) != 0 {
-		sz := c.Style.TitleHeight
+		sz := c.style.titleHeight
 		id := c.id([]byte("!resize"))
 		r := image.Rect(rect.Max.X-sz, rect.Max.Y-sz, rect.Max.X, rect.Max.Y)
 		c.updateControl(id, r, opt)

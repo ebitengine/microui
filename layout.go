@@ -63,10 +63,10 @@ func (c *Context) layoutNext() image.Rectangle {
 	}
 	res.Max.Y = res.Min.Y + layout.height
 	if res.Dx() == 0 {
-		res.Max.X = res.Min.X + c.Style.Size.X + c.Style.Padding*2
+		res.Max.X = res.Min.X + c.style.size.X + c.style.padding*2
 	}
 	if res.Dy() == 0 {
-		res.Max.Y = res.Min.Y + c.Style.Size.Y + c.Style.Padding*2
+		res.Max.Y = res.Min.Y + c.style.size.Y + c.style.padding*2
 	}
 	if res.Dx() < 0 {
 		res.Max.X += layout.body.Dx() - res.Min.X + 1
@@ -78,8 +78,8 @@ func (c *Context) layoutNext() image.Rectangle {
 	layout.itemIndex++
 
 	// update position
-	layout.position.X += res.Dx() + c.Style.Spacing
-	layout.nextRow = max(layout.nextRow, res.Max.Y+c.Style.Spacing)
+	layout.position.X += res.Dx() + c.style.spacing
+	layout.nextRow = max(layout.nextRow, res.Max.Y+c.style.spacing)
 
 	// apply body offset
 	res = res.Add(layout.body.Min)
