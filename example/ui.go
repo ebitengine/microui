@@ -150,16 +150,15 @@ func (g *Game) logWindow() {
 	g.ctx.Window("Log Window", image.Rect(350, 40, 650, 240), func(res microui.Response, layout microui.Layout) {
 		// output text panel
 		g.ctx.SetLayoutRow([]int{-1}, -25)
-		var panel *microui.Container
 		g.ctx.Panel("Log Output", func(layout microui.Layout) {
-			panel = g.ctx.CurrentContainer()
+			panel := g.ctx.CurrentContainer()
 			g.ctx.SetLayoutRow([]int{-1}, -1)
 			g.ctx.Text(g.logBuf)
+			if g.logUpdated {
+				panel.Scroll.Y = panel.ContentSize.Y
+				g.logUpdated = false
+			}
 		})
-		if g.logUpdated {
-			panel.Scroll.Y = panel.ContentSize.Y
-			g.logUpdated = false
-		}
 
 		// input textbox + submit button
 		var submitted bool
