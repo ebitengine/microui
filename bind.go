@@ -76,11 +76,6 @@ func (c *Context) updateInput() {
 	if wx, wy := ebiten.Wheel(); wx != 0 || wy != 0 {
 		c.inputScroll(int(wx*-30), int(wy*-30))
 	}
-	// TODO: Use exp/textinput.Field.
-	chars := ebiten.AppendInputChars(nil)
-	if len(chars) > 0 {
-		c.inputText(chars)
-	}
 	if inpututil.IsMouseButtonJustPressed(ebiten.MouseButtonLeft) {
 		c.inputMouseDown(cx, cy, ebiten.MouseButtonLeft)
 	} else if inpututil.IsMouseButtonJustReleased(ebiten.MouseButtonLeft) {

@@ -200,7 +200,6 @@ func (c *Context) end() {
 
 	// reset input state
 	c.keyPressed = 0
-	c.textInput = nil
 	c.mousePressed = 0
 	c.scrollDelta = image.Pt(0, 0)
 	c.lastMousePos = c.mousePos

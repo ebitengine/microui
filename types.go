@@ -8,6 +8,7 @@ import (
 	"image/color"
 
 	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/hajimehoshi/ebiten/v2/exp/textinput"
 )
 
 type ID uint64
@@ -141,5 +142,6 @@ type Context struct {
 	mousePressed int
 	keyDown      int
 	keyPressed   int
-	textInput    []rune
+
+	textFields map[ID]*textinput.Field
 }

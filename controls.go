@@ -7,8 +7,12 @@ import (
 	"fmt"
 	"image"
 	"math"
+	"os"
 	"strconv"
+	"unicode/utf8"
 	"unsafe"
+
+	"github.com/hajimehoshi/ebiten/v2/exp/textinput"
 )
 
 func (c *Context) inHoverRoot() bool {
@@ -180,26 +184,59 @@ func (c *Context) Checkbox(label string, state *bool) Response {
 	})
 }
 
+func (c *Context) textField(id ID) *textinput.Field {
+	if id == 0 {
+		return nil
+	}
+	if _, ok := c.textFields[id]; !ok {
+		if c.textFields == nil {
+			c.textFields = make(map[ID]*textinput.Field)
+		}
+		c.textFields[id] = &textinput.Field{}
+	}
+	return c.textFields[id]
+}
+
 func (c *Context) textBoxRaw(buf *string, id ID, opt option) Response {
 	return c.Control(id, opt|optionHoldFocus, func(r image.Rectangle) Response {
 		var res Response
-		buflen := len(*buf)
 
 		if c.focus == id {
 			// handle text input
-			if len(c.textInput) > 0 {
-				*buf += string(c.textInput)
+			f := c.textField(id)
+			f.Focus()
+			x := r.Min.X + c.style.padding + textWidth(*buf)
+			y := r.Min.Y + lineHeight()
+			handled, err := f.HandleInput(x, y)
+			if err != nil {
+				fmt.Fprintln(os.Stderr, err)
+				return 0
+			}
+			if *buf != f.TextForRendering() {
+				*buf = f.TextForRendering()
 				res |= ResponseChange
 			}
-			// handle backspace
-			if (c.keyPressed&keyBackspace) != 0 && buflen > 0 {
-				*buf = (*buf)[:buflen-1]
-				res |= ResponseChange
+
+			if !handled {
+				// handle backspace
+				if (c.keyPressed&keyBackspace) != 0 && len(*buf) > 0 {
+					_, size := utf8.DecodeLastRuneInString(*buf)
+					*buf = (*buf)[:len(*buf)-size]
+					f.SetTextAndSelection(*buf, len(*buf), len(*buf))
+					res |= ResponseChange
+				}
+
+				// handle return
+				if (c.keyPressed & keyReturn) != 0 {
+					c.SetFocus(0)
+					res |= ResponseSubmit
+					f.SetTextAndSelection("", 0, 0)
+				}
 			}
-			// handle return
-			if (c.keyPressed & keyReturn) != 0 {
-				c.SetFocus(0)
-				res |= ResponseSubmit
+		} else {
+			f := c.textField(id)
+			if *buf != f.TextForRendering() {
+				f.SetTextAndSelection(*buf, len(*buf), len(*buf))
 			}
 		}
 

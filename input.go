@@ -65,7 +65,3 @@ func (c *Context) inputKeyDown(key ebiten.Key) {
 func (c *Context) inputKeyUp(key ebiten.Key) {
 	c.keyDown &= ^keyToInt(key)
 }
-
-func (c *Context) inputText(text []rune) {
-	c.textInput = text
-}
